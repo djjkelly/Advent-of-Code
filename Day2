@@ -1,0 +1,58 @@
+import csv
+shape_scores = {"Rock":1,"Paper":2,"Scissors":3}
+outcome_scores = {"Loss":0, "Draw":3,"Win":6}
+opponent_code = {"A":"Rock","B":"Paper","C":"Scissors"}
+response_code = {"X":"Rock","Y":"Paper","Z":"Scissors"}
+line_count = 0
+total_estimate_score = 0
+with open("Day2Raw.csv",'r') as file:
+    csv_parsed = csv.reader(file)
+    for row in csv_parsed:
+        print("____________\nNew game!")
+        opponent_turn = opponent_code.get(row[0][1-line_count])
+        response_turn = response_code.get(row[0][3-line_count])
+        line_count = 1
+        print("Opponent's Turn: "+opponent_turn)
+        print("Response Turn: "+response_turn)
+        if opponent_turn == "Rock":
+            if response_turn == "Paper":
+                result = "Win"
+            elif response_turn == "Scissors":
+                result = "Loss"
+            elif response_turn == "Rock":
+                result = "Draw"
+            else:
+                result = "Outcome Uncertain!"
+        elif opponent_turn == "Paper":
+            if response_turn == "Paper":
+                result = "Draw"
+            elif response_turn == "Scissors":
+                result = "Win"
+            elif response_turn == "Rock":
+                result = "Loss"
+            else:
+                result = "Outcome Uncertain!"
+        elif opponent_turn == "Scissors":
+            if response_turn == "Paper":
+                result = "Loss"
+            elif response_turn == "Scissors":
+                result = "Draw"
+            elif response_turn == "Rock":
+                result = "Win"
+            else:
+                result = "Outcome Uncertain!"
+        else:
+            result = "Opponent Turn Not Found!"
+        print(result)
+        shape_score = shape_scores[response_turn]
+        result_score = outcome_scores[result]
+        print (shape_score)
+        print (result_score)
+        total_estimate_score += result_score
+        total_estimate_score += shape_score
+
+print (total_estimate_score)
+
+
+
+

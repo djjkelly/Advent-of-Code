@@ -1,0 +1,58 @@
+import csv
+shape_scores = {"Rock":1,"Paper":2,"Scissors":3}
+outcome_scores = {"Loss":0, "Draw":3,"Win":6}
+opponent_code = {"A":"Rock","B":"Paper","C":"Scissors"}
+target_code = {"X":"Loss","Y":"Draw","Z":"Win"}
+line_count = 0
+total_estimate_score = 0
+with open("Day2Raw.csv",'r') as file:
+    csv_parsed = csv.reader(file)
+    for row in csv_parsed:
+        print("____________\nNew game!")
+        opponent_turn = opponent_code.get(row[0][1-line_count])
+        outcome = target_code.get(row[0][3-line_count])
+        line_count = 1
+        print("Opponent's Turn: "+opponent_turn)
+        print("Intended Outcome: "+outcome)
+        if opponent_turn == "Rock":
+            if outcome == "Loss":
+                player_turn = "Scissors"
+            elif outcome == "Win":
+                player_turn = "Paper"
+            elif outcome == "Draw":
+                player_turn = "Rock"
+            else:
+                player_turn = "Outcome Uncertain!"
+        elif opponent_turn == "Paper":
+            if outcome == "Loss":
+                player_turn = "Rock"
+            elif outcome == "Win":
+                player_turn = "Scissors"
+            elif outcome == "Draw":
+                player_turn = "Paper"
+            else:
+                player_turn = "Outcome Uncertain!"
+        elif opponent_turn == "Scissors":
+            if outcome == "Loss":
+                player_turn = "Paper"
+            elif outcome == "Win":
+                player_turn = "Rock"
+            elif outcome == "Draw":
+                player_turn = "Scissors"
+            else:
+                player_turn = "Outcome Uncertain!"
+        else:
+            player_turn = "Opponent Turn Not Found!"
+        print("The player responded with: "+player_turn)
+        shape_score = shape_scores[player_turn]
+        player_turn_score = outcome_scores[outcome]
+        print (shape_score)
+        print (player_turn_score)
+        total_estimate_score += player_turn_score
+        total_estimate_score += shape_score
+
+print (total_estimate_score)
+
+
+
+
