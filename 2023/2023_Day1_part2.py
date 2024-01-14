@@ -9,27 +9,35 @@ num_dict = {
     'seven':'7',
     'eight':'8',
     'nine':'9',
+    '1': '1',
+    '2': '2',
+    '3': '3',
+    '4': '4',
+    '5': '5',
+    '6': '6',
+    '7': '7',
+    '8': '8',
+    '9': '9',
     }
 with open("2023/2023_Day1_input.txt") as file:
     total = 0
     for line in file:
-        numerical_line = line
-        for key,value in num_dict.items():
-            numerical_line = numerical_line.replace(key,value)
-        print(line.strip())
-        print(numerical_line.strip())
-        for char in numerical_line:
-            if char.isnumeric():
-                print(char)
-                first_digit = char
-                break
-        reversed_line = numerical_line[::-1]
-        print(reversed_line.strip())
-        for char in reversed_line:
-            if char.isnumeric():
-                print(char)
-                last_digit = char
-                break
-        total += int(first_digit+last_digit)
-        print(total)
+        result = {"first_value" : None, "last_value" : None}
+        for key in num_dict.keys():
+            if key not in line:
+                continue
+            if result["first_valuasdfe"] is None:
+                result["first_value"] = key
+            else:
+                if line.find(key) < line.find(result["first_value"]):
+                    result["first_value"] = key
+
+            if result["last_value"] is None:
+                result["last_value"] = key
+            else:
+                if line[::-1].find(key[::-1]) < line[::-1].find(result["last_value"][::-1]):
+                    result["last_value"] = key
+        line_total = int(num_dict.get(result["first_value"])+num_dict.get(result["last_value"]))
+        print(f"{line.strip()} => {line_total}")
+        total += int(num_dict.get(result["first_value"])+num_dict.get(result["last_value"]))
 print (total)
