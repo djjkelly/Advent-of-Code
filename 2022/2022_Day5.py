@@ -1,11 +1,10 @@
 
-
 import codecs
 import csv
 import re
 
 # create a list of lists containing the initial stack of boxes
-with codecs.open("Day5.csv",'r',encoding='utf-8-sig') as input:
+with codecs.open("2022/2022_Day5.csv",'r',encoding='utf-8-sig') as input:
     csv_reader = csv.reader(input)
     array = []
     for row in csv_reader:
@@ -20,7 +19,7 @@ with codecs.open("Day5.csv",'r',encoding='utf-8-sig') as input:
 box_number_list =[]
 initial_locations_list = []
 destination_locations_list = []
-with open("Day5instructions.txt") as instruction_text:
+with open("2022/2022_Day5instructions.txt") as instruction_text:
     for line in instruction_text:
         extracted_numbers = re.findall(r'\b\d+\b',line)
         box_number_list.append(extracted_numbers[0])
@@ -34,44 +33,36 @@ with open("Day5instructions.txt") as instruction_text:
 for j in range(len(array)):
     print(array[j])
 
+# actually move the boxes from one part of the array to another
 for line in range(len(box_number_list)):
     box_number = int(box_number_list[line])
     initial_location = int(initial_locations_list[line])
     destination_location = int(destination_locations_list[line])
-    crates=[]
     print("Moving " + str(box_number) +" boxes from stack " + str(initial_location) + " to stack " + str(destination_location))
 
-    # ensure enough rows are added to the array
-    for drop in range(len(array)):
-        if array[drop][destination_location-1].isalpha() or array[drop][destination_location-1].isnumeric():
-            new_drop = drop
-            break
-        else:
-            continue
-    height_difference = box_number - new_drop
-    if  height_difference > 0:
-        rows_to_add = height_difference
-        for blank_row in range(rows_to_add):
-            array.insert(0,[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
-            new_drop +=1
-
-
     for box in range(box_number):
-        for i in range(len(array)-1):
-            # identify crates at top of stack
-            if array[i][initial_location-1].isalpha():
-                crates.append(array[i][initial_location-1])
-            # remove box from initial_location
-                array[i][initial_location-1]=' '
+
+        #identify the drop required by the crane - how far from the height of the highest stack
+        for drop in range(len(array)):
+            if array[0][destination_location-1].isalpha():
+                array.insert(0,[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
+            if array[drop][destination_location-1].isalpha() or array[drop][destination_location-1].isnumeric():
+                new_drop = drop
                 break
-    
-    print("The crates to be moved are " + str(crates))
+        
+        if len(array)-drop < 0:
+            break
 
-    # add crates to the destination stack
-    for crate_number in range(len(crates)):
-        array[new_drop-crate_number-1][destination_location-1]=crates[len(crates)-1-crate_number]
-
-
+        for i in range(len(array)-1):
+            # identify crate at top of stack
+            if array[i][initial_location-1].isalpha():
+                crate = array[i][initial_location-1]
+                print("The crate to be moved is " + crate)
+            # remove box from initial_location
+                array[i][initial_location-1]=' '            
+            # add box to destination_location
+                array[new_drop-1][destination_location-1]=crate
+                break
     for j in range(len(array)):
         print(array[j])
 

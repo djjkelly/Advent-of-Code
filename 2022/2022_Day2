@@ -5,7 +5,7 @@ opponent_code = {"A":"Rock","B":"Paper","C":"Scissors"}
 response_code = {"X":"Rock","Y":"Paper","Z":"Scissors"}
 line_count = 0
 total_estimate_score = 0
-with open("Day2Raw.csv",'r') as file:
+with open("2022/2022_Day2Raw.csv",'r') as file:
     csv_parsed = csv.reader(file)
     for row in csv_parsed:
         print("____________\nNew game!")
