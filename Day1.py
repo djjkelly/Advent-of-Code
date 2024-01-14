@@ -13,3 +13,4 @@ with codecs.open("Day1_input.txt") as file:
                 break
         total += int(first_digit+last_digit)
 print (total)
+print("done")
