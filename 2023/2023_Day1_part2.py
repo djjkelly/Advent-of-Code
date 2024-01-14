@@ -9,7 +9,7 @@ num_dict = {
     'eight':'8',
     'nine':'9',
     }
-with open("Day1_input.txt") as file:
+with open("2023/2023_Day1_input.txt") as file:
     total = 0
     for line in file:
         numerical_line = line

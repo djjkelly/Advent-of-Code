@@ -1,7 +1,7 @@
 import csv
 import codecs
 
-with codecs.open("Day4Raw.csv",'r',encoding='utf-8-sig') as file:
+with codecs.open("2022/2022_Day4Raw.csv",'r',encoding='utf-8-sig') as file:
     csv_reader = csv.reader(file)
     count = 0
     for row in csv_reader:

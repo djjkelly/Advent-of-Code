@@ -1,5 +1,5 @@
 import codecs
-with codecs.open("Day1_input.txt") as file:
+with codecs.open("2023/2023_Day1_input.txt") as file:
     total = 0
     for line in file:
         for char in line:
