@@ -2,13 +2,9 @@
 # https://adventofcode.com/2023/day/2
 
 import re
-#colours = ('green','blue','red')
+colour_limits = {'green':13,'blue':14,'red':12}
 
-# digits is a modifiable parameter determining how many characters should be scanned in the string
-# this is the maximum number of digits required to represent the cubes expected in the game.
-# in this instance of the game there are no numbers above 99, so 2 digits is ok.
-digits = 2
-
+total = 0 # the "total" variable counts the sum of the game numbers which is able to
 try:
     with open("2023/2023_Day2_input.txt") as file_object:
         file_content = file_object.readlines()
@@ -16,19 +12,25 @@ except FileNotFoundError:
     print("File not found")
 except Exception as e:
     print(f"An error was encountered: {e}")
-for line in file_content:
-    split_line = line.strip().split(";")
+
+for game_number,line in enumerate(file_content,start=1):
+    trimmed_line = line.strip().split(":")[1]
+    # DK: I'm referring to the 3 "rounds" of the game as each time the elf grabs a fistful of cubes
+    rounds = trimmed_line.split(";")
+    print("Game "+ str(game_number) +" consisting of " + str(len(rounds)) + " rounds...")
     max_green = 0
-    max_red = 0
-    max_blue = 0
-    for grab in split_line:
+    green = 0
+    for round_count,round in enumerate(rounds,start=1):
         try:
-        green_position = re.search("green",grab).start()
-except Exception as error:
-        green = ""
-        green = grab[green_position-2] + grab[green_position-1]
-        green = int(green.strip())
-        if green > max_green:
-            max_green = green
-    print(line)
-    print(max_green)
+            green_position = re.search("green",round).start()
+            green = round[green_position-3] + round[green_position-2]
+        except AttributeError:
+            print("Round " + str(round_count) + " has no green")
+            continue
+        print ("Round " + str(round_count) + ". Number of greens found: " + green)
+        if int(green) > max_green:
+            max_green = int(green)
+    print("Game " + str(game_number) + " has a maximum number of " + str(max_green) +" greens.")
+    green_possible = colour_limits['green']>=max_green
+    if (green_possible):
+        print("Based on green only, this could be possible")
