@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 # https://adventofcode.com/2023/day/2
 
-#!/usr/bin/env python3
 import re
 #colours = ('green','blue','red')
 

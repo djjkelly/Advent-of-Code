@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # https://adventofcode.com/2023/day/1
 num_dict = {
     'one':'1',

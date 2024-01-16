@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # https://adventofcode.com/2023/day/1
+
 import codecs
 with codecs.open("2023/2023_Day1_input.txt") as file:
     total = 0
