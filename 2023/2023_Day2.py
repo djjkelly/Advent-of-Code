@@ -3,6 +3,7 @@
 
 import re
 colour_limits = {'green':13,'blue':14,'red':12}
+colour_possible = {'green':True,'blue':True,'Red':True}
 
 total = 0 # the "total" variable counts the sum of the game numbers which is able to
 try:
@@ -18,19 +19,29 @@ for game_number,line in enumerate(file_content,start=1):
     # DK: I'm referring to the 3 "rounds" of the game as each time the elf grabs a fistful of cubes
     rounds = trimmed_line.split(";")
     print("Game "+ str(game_number) +" consisting of " + str(len(rounds)) + " rounds...")
-    max_green = 0
-    green = 0
-    for round_count,round in enumerate(rounds,start=1):
-        try:
-            green_position = re.search("green",round).start()
-            green = round[green_position-3] + round[green_position-2]
-        except AttributeError:
-            print("Round " + str(round_count) + " has no green")
-            continue
-        print ("Round " + str(round_count) + ". Number of greens found: " + green)
-        if int(green) > max_green:
-            max_green = int(green)
-    print("Game " + str(game_number) + " has a maximum number of " + str(max_green) +" greens.")
-    green_possible = colour_limits['green']>=max_green
-    if (green_possible):
-        print("Based on green only, this could be possible")
+    for colour,limit in colour_limits.items():
+        max_of_colour = 0
+        number_of_cubes = 0 # of the specified colour
+        for round_count,round in enumerate(rounds,start=1):
+            try:
+                colour_position = re.search(colour,round).start()
+                number_of_cubes = round[colour_position-3] + round[colour_position-2]
+            except AttributeError:
+                print("Round " + str(round_count) + " has no " + colour)
+                continue
+            print ("Round " + str(round_count) + ". Number of " + colour + "s found: " + number_of_cubes)
+            if int(number_of_cubes) > max_of_colour:
+                max_of_colour = int(number_of_cubes)
+        print("Game " + str(game_number) + " has a maximum number of " + str(max_of_colour) + " " + colour + ".")
+        colour_possible[colour] = max_of_colour <= colour_limits[colour]
+        if (colour_possible):
+            print("Based on " + colour + " only, this could be possible")
+        else:
+            print("Not possible. Number of cubes exceeds limit for " + colour)
+    all_colours_true = all(colour for colour in colour_possible.values())
+    if all_colours_true:
+        total += game_number
+        print("This is true, game number " + str(game_number) + " added to total.")
+    else:
+        print("Game " + str(game_number) + " not possible with available cubes")
+print(total)
