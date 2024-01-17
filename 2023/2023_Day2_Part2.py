@@ -19,7 +19,7 @@ for game_number,line in enumerate(file_content,start=1):
     # DK: I'm referring to the 3 "sets" of the game as each time the elf grabs a fistful of cubes
     sets = trimmed_line.split(";")
     print("Game "+ str(game_number) + " consisting of " + str(len(sets)) + " rounds...")
-    cubes_per_colour = []
+    game_power = 1
     for colour in colours:
         max_of_colour = 0
         number_of_cubes = 0 # of the specified colour
@@ -34,11 +34,7 @@ for game_number,line in enumerate(file_content,start=1):
             if int(number_of_cubes) > max_of_colour:
                 max_of_colour = int(number_of_cubes)
         print("Game " + str(game_number) + " has a maximum number of " + str(max_of_colour) + " " + colour + ".")
-        cubes_per_colour.append(max_of_colour)
-    
-    game_power = 1
-    for entry in cubes_per_colour:
-        game_power *= entry
+        game_power *= max_of_colour
     total += game_power
     print("Game power for game " + str(game_number) + " is " + str(game_power))
 print(total)
