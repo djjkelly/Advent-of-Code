@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/3
 
 try:
-    with open("2023_Day3_input.txt") as file_object:
+    with open("2023/2023_Day3_input.txt") as file_object:
         file_content = file_object.readlines()
 except FileNotFoundError:
     print("File not found")
@@ -14,56 +14,73 @@ symbols = "!@£$%^&*()-=_+|/\\#"
 total = 0
 
 for line_number in range(len(file_content)):
+    subtotal = 0
+    
     current_line = file_content[line_number].strip()
-    if line_number != len(file_content):
+    if line_number < len(file_content)-1:
         next_line = file_content[line_number + 1].strip()
     else:
         next_line = ''
-        for character in range(len(current_line)):
-            next_line.append('.')
-    if line_number > 0:
-        previous_line = 
-    next_to_part = [False]*len(current_line)
-    current_number = ''
-    subtotal = 0
+        for character in current_line:
+            next_line += '.'
+    if line_number == 0:
+        previous_line = ''
+        for character in current_line:
+            previous_line += '.'
+
+    print(previous_line)
+    print(current_line)
+    print(next_line)
     
-    for char in range(len(current_line)):
-        if current_line[char] in symbols:
-            print("Symbol on current line at character " + str(char) + ": current_is_part = True")
-            next_to_part[char] = True
-            if char >0:
-                next_to_part[char-1] = True
-            if char < len(current_line):
-                next_to_part[char+1] = True
-        if next_line[char] in symbols:
-            print("Symbol on next line at character " + str(char) + ": current_is_part = True")
-            next_to_part[char] = True
-            if char >0:
-                next_to_part[char-1] = True
-            if char < len(current_line):
-                next_to_part[char+1] = True
+    working_number = ''
+    next_numbers_are_eligible = False
+    for index,character in enumerate(current_line):
+        symbol_on_nearby_line = False
+        
+        if previous_line[index] in symbols or next_line[index] in symbols:
+            symbol_on_nearby_line = True
+        else:
+            if index > 0:
+                if previous_line[index-1] in symbols or next_line[index-1] in symbols:
+                    symbol_on_nearby_line = True
+            if index < len(current_line)-1:
+                if previous_line[index+1] in symbols or next_line[index+1]in symbols:
+                    symbol_on_nearby_line = True
 
-    is_part_number = False*len(current_line)
-    numbers_count = 0
+        if character.isnumeric():
+            working_number += character
+            if symbol_on_nearby_line:
+                next_numbers_are_eligible = True
+        elif character in symbols:
+            if working_number != '':
+                subtotal += int(working_number)
+                print('Part number ' + str(working_number) + ' found!')
+            working_number = ''
+            next_numbers_are_eligible = True
 
-    for char in range(len(current_line)):
-        if next_to_part[char]:
-            is_part_number[char] = True
-            i = 0
-            while next_to_part[char+i].isnumeric():
-                is_part_number[char+i] = True
-                i+=1
-        if current_line[char].isnumeric():
-            numbers_count += 1
-        if current_line[char]=='.' or char == len(current_line):
-            for i in range(numbers_count):
-                current_line[char-i] = True
+        else:
+            if next_numbers_are_eligible:
+                if working_number != '':
+                    subtotal += int(working_number)
+                    print('Part number ' + str(working_number) + ' found!')
+                next_numbers_are_eligible = False
+            working_number = ''
+    if next_numbers_are_eligible:
+        if working_number != '':
+            subtotal += int(working_number)
+            print('Part number ' + str(working_number) + ' found!')
+            next_numbers_are_eligible = False
+            working_number = ''
     
-    print("end of line")
-    if current_number != '':
-        subtotal += int(current_number)
+    previous_line = current_line
+    print ("Subtotal for line " + str(line_number) + " is " + str(subtotal))
+    total += subtotal
 
-        # this code should scan the current line for symbols, and set the relevant items in a list of booleans to True
-        # it then should read the numbers on a line sequentially, adding to the line subtotal if each number overlaps with a symbol
-        # 
+"""
+Subtotals expected:
+Line 1: 305 + 124 + 514 = 943
+Line 2: 113 + 901 + 869 + 257 = 2140
+Line 3: 377 + 783 + 9 + 855 + 940 + 463 + 844 + 679 = 4950
 
+"""
+print(total)
