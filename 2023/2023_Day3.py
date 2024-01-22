@@ -21,7 +21,8 @@ for line_number in range(len(file_content)):
         next_line = ''
         for character in range(len(current_line)):
             next_line.append('.')
-
+    if line_number > 0:
+        previous_line = 
     next_to_part = [False]*len(current_line)
     current_number = ''
     subtotal = 0
@@ -43,23 +44,20 @@ for line_number in range(len(file_content)):
                 next_to_part[char+1] = True
 
     is_part_number = False*len(current_line)
+    numbers_count = 0
 
     for char in range(len(current_line)):
+        if next_to_part[char]:
+            is_part_number[char] = True
+            i = 0
+            while next_to_part[char+i].isnumeric():
+                is_part_number[char+i] = True
+                i+=1
         if current_line[char].isnumeric():
-            if next_to_part[char]:
-                is_part_number = True
-            current_number += current_line[char]
-
-        if is_part_number and not current_line[char+1].isnumeric():
-            print('adding ' + current_number + ' to subtotal')
-            subtotal += int(current_number)
-            current_number = ''
-            is_part_number = False
-
-        if char == len(current_line):
-            current_number = ''
-        elif current_line[char] == '.' and next_to_part[char] is False:
-            current_number = ''
+            numbers_count += 1
+        if current_line[char]=='.' or char == len(current_line):
+            for i in range(numbers_count):
+                current_line[char-i] = True
     
     print("end of line")
     if current_number != '':
