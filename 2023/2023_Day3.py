@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/3
 
 try:
-    with open("2023/2023_Day3_input.txt") as file_object:
+    with open("2023_Day3_input.txt") as file_object:
         file_content = file_object.readlines()
 except FileNotFoundError:
     print("File not found")
@@ -11,47 +11,91 @@ except Exception as e:
 
 symbols = "!@£$%^&*()-=_+|/\\#"
 previous_line = '............................................................................................................................................'
-previous_line_number_string = ''
 '''Each symbol is surrounded by an imaginary "square" of eligibility.
 Within this square every digit found will be considered as an eligible digit in a part number.
 All digits sequentially adjacent to a digit in a part number eligible digit is included in the part number.
 '''
 total = 0
 for line_number, current_line in enumerate(file_content):
-    is_part_number = False
+    current_line = current_line.strip()
+
+    # previous_line = '.....654.'
+    # current_line = '855*.....'
+
+    print(previous_line)
+    print(current_line)
+
+    subtotal = 0
+
     current_number_string = '0'
-    for character_number,character in enumerate(current_line.strip()):
-        if character == ".":
-            if is_part_number:
-                total += int(current_number_string)
-            is_part_number = False
+    previous_line_number_string = '0'
+    current_number_is_part_number = False
+    number_above_is_part_number = False
+    for character_number,character in enumerate(current_line):
+        character_above = previous_line[character_number]
+        # this section sets "is_part_number" to True if any of the relevant 2 or 3 characters on the line above are symbols.
+        if previous_line[character_number] in symbols:
+            current_number_is_part_number = True
+            number_above_is_part_number = True
+
+        if character_number > 0 and previous_line[character_number-1] in symbols:
+            current_number_is_part_number = True
+            number_above_is_part_number = True
+
+        if character_number+1 < len(current_line):
+            if previous_line[character_number+1] in symbols:
+                current_number_is_part_number = True
+            number_above_is_part_number = True
+
+        # this section looks for numbers on the line above which may correspond to a symbol on the current line
+        if previous_line[character_number].isnumeric():
+            previous_line_number_string += previous_line[character_number]
+            print("Number found on previous line! Previous number updated to " + previous_line_number_string)
+        else:
+            previous_line_number_string = '0'
+
+        if character == "." or character_number==len(current_line)-1:
+            if current_number_is_part_number and current_number_string != '0':
+                print("Current number found. Adding " + current_number_string)
+                subtotal += int(current_number_string)
+            current_number_is_part_number = False
+            number_above_is_part_number = False # sceptical of this
+
             current_number_string = '0'
+
+            if number_above_is_part_number:
+                if previous_line[character_number+1].isnumeric():
+                    previous_line_number_string += previous_line[character_number+1]
+                    if previous_line[character_number+2].isnumeric():
+                        previous_line_number_string += previous_line[character_number+2]
+
+                print("Number above found. Adding " + previous_line_number_string)
+                subtotal += int(previous_line_number_string)
+                number_above_is_part_number = False
+                previous_line_number_string = '0'
+    
         elif character.isnumeric():
             current_number_string+=character
             print("Number found! Number updated to " + current_number_string)
         elif character in symbols:
-            is_part_number = True
-            print("Symbol found!")
+            current_number_is_part_number = True
+            number_above_is_part_number = True
         else:
             print("ERROR: Something has gone wrong, character unaccounted for!")
+    if current_number_is_part_number:
+        print("Adding " + current_number_string)
+        subtotal += int(current_number_string)
 
-    print(current_line)
-    # These need to be the lines at the end of the character-wise for loop.
-    line_before_last = previous_line
+    # This line will need to be at the end of the character-wise for loop.
     previous_line = current_line
 
 
-print("Remember this is not the real total until the non-part numbers have been filtered out. Total: " + str(total))
+print("Total: " + str(total))
 
 '''
 Line 1 ("0") should have a total of 0
-Line 2 should add a total of 901
-Line 3 should have a total of 901 + 783 + 855 = 2539
-Line 4 ("3") should have a total of 2539 + 377 + 742 + 548 + 463 + 844 + 254 + 679 = 6446
-
-In other words, it might work to look one line up for numbers, but not a line down.
-Similarly, for numbers on current line, it makes sense to look up a line for a symbol, but not look down a line.
-This could avoid double counting.
+Line 2 should add a total of ^0^ + 305 + 901 + 514 = 1720
+Line 3 should have a total of ^1720^ + 783 + 9 + 855 + 940 + 844 + 257 = 5408
 '''
 
-# remember to deal with the case at the end of each line (with no '.' present)?
+# remember to deal with the case where a number on the line above has already been counted.
