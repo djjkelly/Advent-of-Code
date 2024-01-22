@@ -11,77 +11,61 @@ except Exception as e:
 
 symbols = "!@£$%^&*()-=_+|/\\#"
 
-for line_number in range(len(file_content)):
+total = 0
 
+for line_number in range(len(file_content)):
     current_line = file_content[line_number].strip()
-    try:
+    if line_number != len(file_content):
         next_line = file_content[line_number + 1].strip()
-    except:
+    else:
         next_line = ''
         for character in range(len(current_line)):
             next_line.append('.')
 
-    current_line = '...234...'
-    next_line    = '..!......'
+    next_to_part = [False]*len(current_line)
+    current_number = ''
+    subtotal = 0
+    
+    for char in range(len(current_line)):
+        if current_line[char] in symbols:
+            print("Symbol on current line at character " + str(char) + ": current_is_part = True")
+            next_to_part[char] = True
+            if char >0:
+                next_to_part[char-1] = True
+            if char < len(current_line):
+                next_to_part[char+1] = True
+        if next_line[char] in symbols:
+            print("Symbol on next line at character " + str(char) + ": current_is_part = True")
+            next_to_part[char] = True
+            if char >0:
+                next_to_part[char-1] = True
+            if char < len(current_line):
+                next_to_part[char+1] = True
 
-    line_total = 0
-
-    current_line_num = ''
-    next_line_num = ''
-    diagonal_down = '' # This is any numbers on the next_line affected by symbols on the current_line
-    diagonal_up = '' # This is any numbers on the current_line affected by symbols on the next_line
-
-    current_is_part = False
-    next_is_part = False
+    is_part_number = False*len(current_line)
 
     for char in range(len(current_line)):
         if current_line[char].isnumeric():
-            current_line_num += current_line[char]
-            #print("current_line_num is " + current_line_num)
+            if next_to_part[char]:
+                is_part_number = True
+            current_number += current_line[char]
 
-        if next_line[char].isnumeric():
-            next_line_num += next_line[char]
-            #print("next_line_num is " + next_line_num)
-        
-        # diagonal down and to right
-        if current_line[char] in symbols:
-            print("Symbol on current line: current_is_part = True")
-            current_is_part = True
-            i = 1
-            while next_line[char+i].isnumeric():
-                diagonal_down += next_line[char+i]
-                i += 1
-            print("Number found down and right from current line symbol, added to diagonal_down: " + diagonal_down)
-        
-        # diagonal up and to right
-        if next_line[char] in symbols:
-            print("Symbol on next line: next_is_part = True")
-            next_is_part = True
-            i = 1
-            while current_line[char+i].isnumeric():
-                diagonal_up += current_line[char+i]
-                i += 1
-            print("Number found up and right from next line symbol, added to diagonal_up: " + diagonal_up)
+        if is_part_number and not current_line[char+1].isnumeric():
+            print('adding ' + current_number + ' to subtotal')
+            subtotal += int(current_number)
+            current_number = ''
+            is_part_number = False
 
-        # This takes the num being stored for the CURRENT line and adds it to the line total
-        if current_line[char] == '.' or char == len(current_line):
-            if current_is_part and current_line_num != '':
-                print("Eligible number ended: Line total updated with current_line_num; current_line_num set to False")
-                line_total += current_line_num
-                current_is_part = False
-    print("End of the line!")
-
+        if char == len(current_line):
+            current_number = ''
+        elif current_line[char] == '.' and next_to_part[char] is False:
+            current_number = ''
     
-        
-        
-        
-        # if there is a number:
-            # get the whole number (go until a dot or the end of the line)
-            # scan for symbols (right, down, diagonal)
-        
-        # if there is a symbol:
-            # scan for numbers
-            # get the whole number (go until a dot or the end of the line)
-        #
-        #
-        #
+    print("end of line")
+    if current_number != '':
+        subtotal += int(current_number)
+
+        # this code should scan the current line for symbols, and set the relevant items in a list of booleans to True
+        # it then should read the numbers on a line sequentially, adding to the line subtotal if each number overlaps with a symbol
+        # 
+
