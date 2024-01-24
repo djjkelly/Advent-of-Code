@@ -20,6 +20,8 @@ line_number 2: 855 * 548  +  869 * 254  =  689266
 line_number 3: 377 * 36  +  679 * 768  =  535044
 line_number 4: 197 * 909  +  336 * 759  +  817 * 427  +  748 * 450  +  621 * 169  =  1224505
 line_number 5: 882 * 368  +  88 * 555  +  135 * 971  =  504501
+line_number 6: 441 * 760  =  335160
+line_number 7: 776 * 425  +  217 * 45  +  674 * 917  =  957623
 """
 for line_number in range(len(file_content)):
     subtotal = 0
@@ -43,7 +45,6 @@ for line_number in range(len(file_content)):
     print(previous_line)
     print(current_line)
     print(next_line)
-    
     previous_working_number = ''
     current_working_number = ''
     next_working_number = ''
@@ -61,8 +62,7 @@ for line_number in range(len(file_content)):
         down_right = False
         right = False
         is_gear = False
-        up_string = ''
-        down_string = ''
+
         up_right_string = ''
         right_string = ''
         down_right_string = ''
@@ -73,17 +73,16 @@ for line_number in range(len(file_content)):
             character_is_symbol = True
             if previous_working_number != '':
                 parts_found += 1
-                #print("Nearby part found left and up")
                 up_left = True
+                #print("Nearby part found left and up")
             if current_working_number != '':
                 parts_found += 1
                 left = True
                 #print("Nearby part found left")
             if next_working_number != '':
                 parts_found += 1
-                #print("Nearby part found left and down")
                 down_left = True
-                '''This is important'''
+                #print("Nearby part found left and down")
 
         if previous_line[index].isnumeric():
             up = True
@@ -118,7 +117,7 @@ for line_number in range(len(file_content)):
                     parts_found += 1
                     #print("Part found diagonally down and right!")
         else:
-            print("End of line_number " + str(line_number) + '.')
+            print("Last character of line_number " + str(line_number) + '.')
 
         if character_is_symbol:
             print("Parts found for this symbol: " + str(parts_found))
@@ -127,50 +126,41 @@ for line_number in range(len(file_content)):
 
         if is_gear:
             print("This part is a gear!")
-            if up_left:
-                if up:
-                    up_string += previous_working_number
-                else:
-                    factors.append(previous_working_number)
+            print(next_working_number)
+            if up_left and not up:
+                factors.append(previous_working_number)
             if left:
                 factors.append(current_working_number)
-            if down_left:
-                if down:
-                    down_string += next_working_number
-                else:
+            if down_left and not down:
+                factors.append(next_working_number)
+
+            if up_left and up and not up_right:
+                factors.append(previous_working_number)
+            if down_left and down and not down_right:
+                factors.append(next_working_number)
+
+
+            if up and not up_left and not up_right:
+                    factors.append(previous_working_number)
+            if down and not down_left and not down_right:
                     factors.append(next_working_number)
 
-            if up:
-                if not up_right:
-                    factors.append(up_string)
-                else:
-                    count = 0
-                    while previous_line[index + count].isnumeric():
-                        up_string += previous_line[index+count]
-                        count +=1
-                    factors.append(up_string)
-            if down:
-                if not down_right:
-                    factors.append(down_string)
-                else:
-                    count = 0
-                    while next_line[index + count].isnumeric():
-                        down_string += next_line[index+count]
-                        count +=1
-                    factors.append(down_string)
-
-            if up_right and not up:
+            if up_right:
+                if not up:
+                    previous_working_number = ''
                 count = 1
                 while index + count < len(current_line) and previous_line[index + count].isnumeric():
-                    up_right_string += previous_line[index+count]
+                    previous_working_number += previous_line[index+count]
                     count +=1
-                factors.append(up_right_string)
-            if down_right and not down:
+                factors.append(previous_working_number)
+            if down_right:
+                if not down:
+                    next_working_number = ''
                 count = 1
                 while index + count < len(current_line) and next_line[index + count].isnumeric():
-                    down_right_string += next_line[index+count]
+                    next_working_number += next_line[index+count]
                     count +=1
-                factors.append(down_right_string)
+                factors.append(next_working_number)
             if right:
                 count = 1
                 while index + count < len(current_line) and current_line[index + count].isnumeric():
@@ -181,15 +171,14 @@ for line_number in range(len(file_content)):
             print(f"The factors are: {factors}")
             subtotal += int(factors[0])*int(factors[1])
 
-        if previous_line[index] == '.' and not up_right:
+        if previous_line[index] == '.':
             previous_working_number = ''
         if character == ".":
             current_working_number = ''
-        if next_line[index] == '.' and not down_right:
+        if next_line[index] == '.':
             next_working_number = ''
     print(f"Subtotal is {subtotal}")
     
-    # leave this intact!
     previous_line = current_line
     #print ("Subtotal for line " + str(line_number) + " is " + str(subtotal))
     total += subtotal
