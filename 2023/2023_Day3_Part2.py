@@ -40,16 +40,16 @@ try:
 
         for index,character in enumerate(line):
             up_left = False
-            left = False
             down_left = False
+            left = False
+            right = False
             up = False
             down = False
             up_right = False
             down_right = False
-            right = False
             parts_found = 0
-            factors = []
             is_gear = False
+            factors = []
 
             if character in symbols:
                 print("* symbol found!")
@@ -103,7 +103,7 @@ try:
                     is_gear = True
 
             if is_gear:
-                print(f"This part at character {index} of line {line_number} is a gear!")
+                print(f"This symbol at character {index} of line {line_number} is a gear!")
                 if up_left:
                     if not up:
                         factors.append(working_number_above)
