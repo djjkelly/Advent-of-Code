@@ -3,7 +3,7 @@
 
 import re
 try:
-    with open("2023/2023_Day5_testinput.txt") as file_object:
+    with open("2023/2023_Day5_input.txt") as file_object:
         file_content = file_object.readlines()
 
     data_dict = {}
@@ -60,7 +60,7 @@ try:
         location_number = translate(humidity_number,"humidity-to-location map")
         if location_number < minimum_location_number:
             minimum_location_number = location_number
-        print(f'The minimum location number is {minimum_location_number}')
+    print(f'The minimum location number is {minimum_location_number}')
 
 except FileNotFoundError:
     print("File not found")
