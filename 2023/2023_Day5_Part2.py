@@ -19,16 +19,16 @@ try:
             source_start = int(element["Source start point"])
             range_length = int(element["Range length"])-1
             source_end = int(source_start + range_length)
-            print(f'Source range: {source_start} - {source_end}.')
+            #print(f'Source range: {source_start} - {source_end}.')
             if current_number >= source_start and current_number <= source_end:
                 result = current_number - source_start + destination_start
-                print(f'The source range contains the current number! Returning {result}')
+                #print(f'The source range contains the current number! Returning {result}')
                 return(result)
             else:
-                print(f'The number is not translated')
+                #print(f'The number is not translated')
                 continue
         if not result:
-            print(f"Returning current number {current_number}")
+            #print(f"Returning current number {current_number}")
             return(current_number)
 
     for line_number,line in enumerate(file_content):
@@ -48,10 +48,22 @@ try:
     if current_header is not None and current_lines:
         data_dict[current_header] = current_lines
     #print(data_dict)
-    seeds = data_dict['seeds'][0].split()
+    seeds_list = data_dict['seeds'][0].split()
+    print(seeds_list)
+    length = int(len(seeds_list)/2)
+    seeds = []
+    for number in range(length):
+        range_start = int(seeds_list[number*2])
+        range_length = int(seeds_list[number*2+1])
+        #print(f'The range starts at {range_start} and has a length of {range_length}')
+        seeds_sublist = list(range(range_start,range_start+range_length))
+        seeds.extend(seeds_sublist)
+    print(len(seeds)) # this prints 1934995782 which is correct
+    seeds = list(set(seeds))
+    print(len(seeds))
+
     for seed_number in seeds:
-        print("This is seed number: ",seed_number)
-        soil_number = translate(int(seed_number),"seed-to-soil map")
+        soil_number = translate(seed_number,"seed-to-soil map")
         fertiliser_number = translate(soil_number,"soil-to-fertilizer map")
         water_number = translate(fertiliser_number,"fertilizer-to-water map")
         light_number = translate(water_number,"water-to-light map")
