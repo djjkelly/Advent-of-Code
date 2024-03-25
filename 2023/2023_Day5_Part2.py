@@ -3,7 +3,7 @@
 
 import re
 try:
-    with open("2023/2023_Day5_testinput_DK.txt") as file_object:
+    with open("2023/2023_Day5_input.txt") as file_object:
         file_content = file_object.readlines()
 
     data_dict = {}
@@ -31,8 +31,7 @@ try:
         data_dict[current_header] = current_lines
     seeds_list = data_dict['seeds'][0].split()
 
-    # express the seed numbers as ranges
-    def convert_numbers_to_ranges(seeds_list):
+    def convert_numbers_to_ranges(seeds_list): # express the seed numbers as ranges
         seeds_ranges = []
         for number in range(int(len(seeds_list)/2)):
             range_start = int(seeds_list[number*2])
@@ -43,7 +42,7 @@ try:
         return(seeds_ranges)
     #print(f'convert_numbers_to_ranges {[50,13,69,12]}')
     
-    def sort_ranges(seeds_ranges): # sorting and removing  duplicates from ranges - it turns out there are no duplicates anyway!
+    def sort_ranges(seeds_ranges): # sorting and removing duplicates from ranges (it turns out there are no duplicates anyway!)
         sorted_ranges = sorted(seeds_ranges,key=lambda x: x[0])
         merged = True
         while merged:
@@ -121,7 +120,6 @@ try:
             split_ranges = split_range(range_to_check)
             # Replace the current range with the split ranges
             continuous_ranges[index:index + 1] = split_ranges
-
         return translated_continuous_ranges
     #print(f'test return value based on [50,70]: {make_all_ranges_continuous([50,70],"seed-to-soil map")}')
 
@@ -130,17 +128,23 @@ try:
     sorted_seeds_ranges = sort_ranges(seeds_ranges)
     print(f'sorted_seeds_ranges {sorted_seeds_ranges}')
 
-    for seed_range in sorted_seeds_ranges:
-        print('Starting new seed range: ',seed_range," of data type ", type(seed_range))
+    next_ranges = sorted_seeds_ranges
+    for key in keys:
+        print("evaluating key: ",key)
+        sorted_ranges = sort_ranges(next_ranges)
         translated_continuous_ranges = []
-        key = "seed-to-soil map"
-        translated_continuous_ranges = translate_continuous_ranges(seed_range,key)
+        for range in sorted_ranges:
+            print('Starting new range: ',range)
+            translated_continuous_ranges.extend(translate_continuous_ranges(range,key))
         print(translated_continuous_ranges)
-        #if key == "humidity-to-location map":
-        #    local_minimum_location_number = min(output)
-        #if local_minimum_location_number < minimum_location_number:
-        #    minimum_location_number = local_minimum_location_number
-    #print(f'The minimum location number is {minimum_location_number}')
+        next_ranges = translated_continuous_ranges
+    if key == "humidity-to-location map":
+        location_ranges = translated_continuous_ranges
+        print("Location ranges: ",location_ranges)
+        for location_range in location_ranges:
+            if min(location_range) < minimum_location_number:
+                minimum_location_number = min(location_range)
+        print(f'The minimum location number is {minimum_location_number}')
 
 except FileNotFoundError:
     print("File not found")
