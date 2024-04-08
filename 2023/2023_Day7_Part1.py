@@ -108,16 +108,14 @@ high_card = sort_list_list(high_card,1)
 # print(high_card)
 
 total_winnings = 0
-all_list_hands = high_card + one_pair + two_pairs + three_of_a_kind
-all_dict_hands = full_house + four_of_a_kind + five_of_a_kind
-for i, hand in enumerate(all_list_hands):
+all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + four_of_a_kind + five_of_a_kind
+for i, hand in enumerate(all_hands):
     rank = i + 1
+    bid = hand[1]
+    print('cards: ',hand[0],'bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
-for j,hand in enumerate(all_dict_hands):
-    rank = j + i + 2
-    hand_winnings = rank * hand[1]
-    total_winnings += hand_winnings
+
 print('number of lines processed: ',rank)
 print(f"total_winnings: {total_winnings}")
 '''
@@ -127,5 +125,5 @@ The highest ranks will be AAAAA, KKKKK, QQQQQ...
 I think my program needs to sort them into categories first, and then sort the categories.
 
 251328559 answer submitted - wrong answer, too low.
-251327055 answer submitted - wrong answer, too low.
+251327055 answer submitted - wrong answer, too low. The sort_string function is not working correctly.
 '''
