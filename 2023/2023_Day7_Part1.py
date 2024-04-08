@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/7
 
-with open("2023/2023_Day7_testinput.txt") as file_object: # test_input should give a total_winnings of 6440: done
+with open("2023/2023_Day7_input.txt") as file_object: # test_input should give a total_winnings of 6440: done
     file_content = file_object.readlines()
 
 # a rank of 1 means the weakest hand
@@ -15,15 +15,6 @@ three_of_a_kind = []
 two_pairs = []
 one_pair = []
 high_card = []
-
-def sort_list_dict(input_list,input_int):
-    sorted_list =[]
-    for card in card_ranking:
-        for hand in input_list:
-            if card in hand.keys():
-                if hand[card] == input_int:
-                    sorted_list.append(hand)
-    return sorted_list
 
 def sort_list_list(input_list,input_int):
     output_list = []
@@ -66,14 +57,13 @@ for j,line in enumerate(file_content):
     max_value = max(values_list)
     #print("max value: ",max_value)
     #cards["line index"] = index
-    cards["bid"] = bid
     if max_value == 5:
-        five_of_a_kind.append(cards)
+        five_of_a_kind.append([sort_string(hand),bid])
     elif max_value == 4:
-        four_of_a_kind.append(cards)
+        four_of_a_kind.append([sort_string(hand),bid])
     elif max_value == 3:
         if 2 in values_list:
-            full_house.append(cards)
+            full_house.append([sort_string(hand), bid])
             print('appending cards to full house list: ',cards)
         else:
             three_of_a_kind.append([sort_string(hand),bid])
@@ -85,15 +75,15 @@ for j,line in enumerate(file_content):
             one_pair.append([sort_string(hand),bid])
     else:
         high_card.append([sort_string(hand),bid])
-#print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
+print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
 
-five_of_a_kind = sort_list_dict(five_of_a_kind,5)
+five_of_a_kind = sort_list_list(five_of_a_kind,5)
 # print(five_of_a_kind)
-four_of_a_kind = sort_list_dict(four_of_a_kind,1)
-four_of_a_kind = sort_list_dict(four_of_a_kind,4)
+four_of_a_kind = sort_list_list(four_of_a_kind,1)
+four_of_a_kind = sort_list_list(four_of_a_kind,4)
 # print(four_of_a_kind)
-full_house = sort_list_dict(full_house,2)
-full_house = sort_list_dict(full_house,3)
+full_house = sort_list_list(full_house,2)
+full_house = sort_list_list(full_house,3)
 # print(full_house)
 
 # This method is not suitable for sorting three of a kind, two pairs, pair, or high card.
@@ -126,7 +116,7 @@ for i, hand in enumerate(all_list_hands):
     total_winnings += hand_winnings
 for j,hand in enumerate(all_dict_hands):
     rank = j + i + 2
-    hand_winnings = rank * hand['bid']
+    hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
 print('number of lines processed: ',rank)
 print(f"total_winnings: {total_winnings}")
@@ -137,4 +127,5 @@ The highest ranks will be AAAAA, KKKKK, QQQQQ...
 I think my program needs to sort them into categories first, and then sort the categories.
 
 251328559 answer submitted - wrong answer, too low.
+251327055 answer submitted - wrong answer, too low.
 '''
