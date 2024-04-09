@@ -26,11 +26,26 @@ def sort_list_list(input_list,input_int):
 
 def sort_string(string):
     char_counts = {}
+    #print(string)
+    string = ''.join(sorted(hand, key = lambda card: reverse_card_ranking.index(card)))
+    print(string)
+    four_cards,three_cards,two_cards = '','',''
     for char in string:
         if char in char_counts:
             char_counts[char] += 1
+            if char_counts[char] == 5:
+                return string
         else:
             char_counts[char] = 1
+    if char_counts[char] == 4:
+        four_cards = char
+        print('four cards: ',four_cards)
+    if char_counts[char] == 3:
+        three_cards = char
+        print('three cards: ',three_cards)
+    if char_counts[char] == 2:
+        two_cards += char
+        print('two cards: ',two_cards)
     repeated_chars = []
     unique_chars = ""
     for char, count in char_counts.items():
@@ -64,10 +79,8 @@ for j,line in enumerate(file_content):
     elif max_value == 3:
         if 2 in values_list:
             full_house.append([sort_string(hand), bid])
-            print('appending cards to full house list: ',cards)
         else:
             three_of_a_kind.append([sort_string(hand),bid])
-            print('appending cards to three of a kind list: ',cards)
     elif max_value == 2:
         if values_list.count(2) == 2:
             two_pairs.append([sort_string(hand),bid])
@@ -75,7 +88,7 @@ for j,line in enumerate(file_content):
             one_pair.append([sort_string(hand),bid])
     else:
         high_card.append([sort_string(hand),bid])
-print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
+#print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
 
 five_of_a_kind = sort_list_list(five_of_a_kind,5)
 # print(five_of_a_kind)
@@ -90,7 +103,7 @@ full_house = sort_list_list(full_house,3)
 three_of_a_kind = sort_list_list(three_of_a_kind,5)
 three_of_a_kind = sort_list_list(three_of_a_kind,4)
 three_of_a_kind = sort_list_list(three_of_a_kind,3)
-print(three_of_a_kind)
+#print(three_of_a_kind)
 two_pairs = sort_list_list(two_pairs,5)
 two_pairs = sort_list_list(two_pairs,4) # could also be based on 3
 two_pairs = sort_list_list(two_pairs,2) # could also be based on 1
@@ -112,7 +125,7 @@ all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + fo
 for i, hand in enumerate(all_hands):
     rank = i + 1
     bid = hand[1]
-    print('cards: ',hand[0],'bid: ',bid)
+    #print('cards: ',hand[0],'bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
 
