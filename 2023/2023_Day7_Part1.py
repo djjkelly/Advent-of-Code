@@ -24,38 +24,58 @@ def sort_list_list(input_list,input_int):
                 output_list.append(line)
     return output_list
 
-def sort_string(string):
-    char_counts = {}
+def sort_string(hand):
     #print(string)
-    string = ''.join(sorted(hand, key = lambda card: reverse_card_ranking.index(card)))
-    print(string)
-    four_cards,three_cards,two_cards = '','',''
-    for char in string:
-        if char in char_counts:
-            char_counts[char] += 1
-            if char_counts[char] == 5:
-                return string
+    hand = ''.join(sorted(hand, key = lambda card: reverse_card_ranking.index(card)))
+    #print(hand)
+    previous_card = ''
+    cards_to_move = ''
+    five_cards,four_cards,three_cards,two_cards,unique_cards = '','','','',''
+    for card in hand:
+        #print(f'card: {card}, previous card: {previous_card}')
+        if card == previous_card:
+            #print('repeat card found')
+            if cards_to_move == '':
+                cards_to_move += 2*card
+            else:
+                cards_to_move += card
+            #print('cards_to_move updated: ',cards_to_move)
         else:
-            char_counts[char] = 1
-    if char_counts[char] == 4:
-        four_cards = char
-        print('four cards: ',four_cards)
-    if char_counts[char] == 3:
-        three_cards = char
-        print('three cards: ',three_cards)
-    if char_counts[char] == 2:
-        two_cards += char
-        print('two cards: ',two_cards)
-    repeated_chars = []
-    unique_chars = ""
-    for char, count in char_counts.items():
-        if count > 1:
-            repeated_chars.append((char * count, count))
-        else:
-            unique_chars += char
-    repeated_chars.sort(key=lambda x: reverse_card_ranking.index(x[0][0]))
-    sorted_string = ''.join(group[0] for group in repeated_chars) + unique_chars
+            #print('new card found')
+            if len(cards_to_move) == 4:
+                four_cards += cards_to_move
+                #print(f'cards added to four cards')
+            if len(cards_to_move) == 3:
+                three_cards += cards_to_move
+                #print(f'cards added to three cards')
+            if len(cards_to_move) == 2:
+                two_cards += cards_to_move
+                #print(f'cards added to two cards')
+            if len(cards_to_move) == 0:
+                unique_cards += previous_card
+                #print(f'unique card added: {previous_card}, updated unique cards to {unique_cards}')
+            cards_to_move = ''
+        previous_card = card
+    if len(cards_to_move) == 5:
+        five_cards += cards_to_move
+        #print(f'cards of len added to five_cards')
+    if len(cards_to_move) == 4:
+        four_cards += cards_to_move
+        #print(f'cards added to four cards')
+    if len(cards_to_move) == 3:
+        three_cards += cards_to_move
+        #print(f'cards added to three cards')
+    if len(cards_to_move) == 2:
+        two_cards += cards_to_move
+        #print(f'cards added to two cards')
+    if len(cards_to_move) == 0:
+        unique_cards += previous_card
+        #print(f'unique card added: {previous_card}, updated unique cards to {unique_cards}')
+    sorted_string = five_cards + four_cards + three_cards + two_cards + unique_cards
+    #print(f'five_cards: {five_cards}, four_cards: {four_cards}, three_cards: {three_cards}, two_cards: {two_cards}, unique_cards: {unique_cards}')
     return sorted_string
+
+#print(f'test for sort_string function: {sort_string('AQTTK')}')
 
 for j,line in enumerate(file_content):
     hand = line.split()[0]
@@ -92,11 +112,11 @@ for j,line in enumerate(file_content):
 
 five_of_a_kind = sort_list_list(five_of_a_kind,5)
 # print(five_of_a_kind)
-four_of_a_kind = sort_list_list(four_of_a_kind,1)
+four_of_a_kind = sort_list_list(four_of_a_kind,5)
 four_of_a_kind = sort_list_list(four_of_a_kind,4)
 # print(four_of_a_kind)
-full_house = sort_list_list(full_house,2)
 full_house = sort_list_list(full_house,3)
+full_house = sort_list_list(full_house,2)
 # print(full_house)
 
 # This method is not suitable for sorting three of a kind, two pairs, pair, or high card.
@@ -125,7 +145,7 @@ all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + fo
 for i, hand in enumerate(all_hands):
     rank = i + 1
     bid = hand[1]
-    #print('cards: ',hand[0],'bid: ',bid)
+    print('cards: ',hand[0],'bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
 
@@ -139,4 +159,6 @@ I think my program needs to sort them into categories first, and then sort the c
 
 251328559 answer submitted - wrong answer, too low.
 251327055 answer submitted - wrong answer, too low. The sort_string function is not working correctly.
+251603392 answer submitted - wrong answer, too low. Issue found in calling the sort_list function.
+251606919 answer submitted - wrong answer, too low.
 '''
