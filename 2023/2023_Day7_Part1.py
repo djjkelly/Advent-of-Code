@@ -74,7 +74,6 @@ def sort_string(hand):
     sorted_string = five_cards + four_cards + three_cards + two_cards + unique_cards
     #print(f'five_cards: {five_cards}, four_cards: {four_cards}, three_cards: {three_cards}, two_cards: {two_cards}, unique_cards: {unique_cards}')
     return sorted_string
-
 #print(f'test for sort_string function: {sort_string('AQTTK')}')
 
 for j,line in enumerate(file_content):
@@ -113,25 +112,25 @@ for j,line in enumerate(file_content):
 five_of_a_kind = sort_list_list(five_of_a_kind,5)
 # print(five_of_a_kind)
 four_of_a_kind = sort_list_list(four_of_a_kind,5)
-four_of_a_kind = sort_list_list(four_of_a_kind,4)
+four_of_a_kind = sort_list_list(four_of_a_kind,4) # 1,2,3,4 are the same
 # print(four_of_a_kind)
-full_house = sort_list_list(full_house,3)
-full_house = sort_list_list(full_house,2)
+full_house = sort_list_list(full_house,5) # 4,5 are the same
+full_house = sort_list_list(full_house,3) # 1,2,3 are the same
 # print(full_house)
 
 # This method is not suitable for sorting three of a kind, two pairs, pair, or high card.
 three_of_a_kind = sort_list_list(three_of_a_kind,5)
 three_of_a_kind = sort_list_list(three_of_a_kind,4)
-three_of_a_kind = sort_list_list(three_of_a_kind,3)
+three_of_a_kind = sort_list_list(three_of_a_kind,3) # 1,2,3 are the same
 #print(three_of_a_kind)
 two_pairs = sort_list_list(two_pairs,5)
-two_pairs = sort_list_list(two_pairs,4) # could also be based on 3
-two_pairs = sort_list_list(two_pairs,2) # could also be based on 1
+two_pairs = sort_list_list(two_pairs,4) # 4,3 are the same
+two_pairs = sort_list_list(two_pairs,2) # 1,2 are the same
 # print(two_pairs)
 one_pair = sort_list_list(one_pair,5)
 one_pair = sort_list_list(one_pair,4)
 one_pair = sort_list_list(one_pair,3)
-one_pair = sort_list_list(one_pair,2)
+one_pair = sort_list_list(one_pair,2) # 1,2 are the same
 # print(one_pair)
 high_card = sort_list_list(high_card,5)
 high_card = sort_list_list(high_card,4)
@@ -159,6 +158,7 @@ I think my program needs to sort them into categories first, and then sort the c
 
 251328559 answer submitted - wrong answer, too low.
 251327055 answer submitted - wrong answer, too low. The sort_string function is not working correctly.
-251603392 answer submitted - wrong answer, too low. Issue found in calling the sort_list function.
-251606919 answer submitted - wrong answer, too low.
+251603392 answer submitted - wrong answer, too low. Issue found in calling the sort_list function for four_of_a_kind.
+251606919 answer submitted - wrong answer, too low. Issue found in calling the sort_list function for full_house.
+251610788 answer submitted - wrong answer, too low. No idea why. I've checked the logic of calling sort_list for other lists.
 '''
