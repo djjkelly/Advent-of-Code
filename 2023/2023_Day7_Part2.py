@@ -38,7 +38,6 @@ for j,line in enumerate(file_content):
 secondary_ordered_list = secondary_list_sorting(full_input_list)
 
 for line in secondary_ordered_list:
-    #print(line)
     hand,bid = line[0],line[1]
     cards = {}
     for card in hand:
@@ -48,22 +47,38 @@ for line in secondary_ordered_list:
             cards[card] += 1
     #print(cards)
     values_list = list(cards.values())
+    max_value = max(values_list)
     if 'J' in cards:
         number_of_jacks = cards['J']
-        if number_of_jacks > 1:
-            print(f'cards: {cards}\n{number_of_jacks} jacks found in values_list: {values_list}')
+        print(f'\n New hand found with Jack(s)! Hand: {hand} Jack(s) found: {number_of_jacks}')
+        for card,value in cards.items():
+            if card == 'J':
+                continue
+            print('card',card,'value',value)
+            if max_value == 1:
+                cards[card] = value + number_of_jacks
+                print(f'highest unique card: {card} card quantities updated: ', cards)
+                break
+            if value > 1:
+                print('highest card: ',card)
+                cards[card] = value + number_of_jacks
+                print('card quantities updated for multi-card: ', cards)
+                break
+    values_list = list(cards.values())
     max_value = max(values_list)
-    if max_value + number_of_jacks == 5:
+    print(f'max value: {max_value}')
+    if max_value == 5:
         five_of_a_kind.append([hand,bid])
-    elif max_value + number_of_jacks == 4:
+    elif max_value == 4:
         four_of_a_kind.append([hand,bid])
-    elif max_value + number_of_jacks == 3:
+    elif max_value == 3:
         if 2 in values_list:
             full_house.append([hand, bid])
         else:
             three_of_a_kind.append([hand,bid])
     elif max_value == 2:
         if values_list.count(2) == 2:
+            #print('Two pairs found!, Cards are: ',cards
             two_pairs.append([hand,bid])
         else:
             one_pair.append([hand,bid])
@@ -77,7 +92,7 @@ all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + fo
 for i, hand in enumerate(all_hands):
     rank = i + 1
     bid = hand[1]
-    print('rank: ',rank,' cards: ',hand[0],' bid: ',bid)
+    #print('rank: ',rank,' cards: ',hand[0],' bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
 
@@ -88,5 +103,11 @@ print(f"total_winnings: {total_winnings}")
 The lowest ranked hands will be J2345, J2346, J2347...
 The highest ranks will be AAAAA, AAAAJ, AAAJJ, ...      ..., QQQQJ, QQQJJ, QQJJJ, QJJJJ, TTTTT, ...
 
+251976688: answer too low
+252375781: answer too high
 
+This method is not always choosing the correct card to up-value with jacks.
+It is actually giving the ['J3TT3', 540] a higher rank than ['J22KK', 519].
+In other words it is basing it off the 3 being higher than the 2.
+It should actually be looking at the K being higher than the T.
 '''
