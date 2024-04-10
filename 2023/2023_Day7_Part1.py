@@ -92,45 +92,54 @@ for j,line in enumerate(file_content):
     #print("max value: ",max_value)
     #cards["line index"] = index
     if max_value == 5:
-        five_of_a_kind.append([sort_string(hand),bid])
+        five_of_a_kind.append([hand,bid])
     elif max_value == 4:
-        four_of_a_kind.append([sort_string(hand),bid])
+        four_of_a_kind.append([hand,bid])
     elif max_value == 3:
         if 2 in values_list:
-            full_house.append([sort_string(hand), bid])
+            full_house.append([hand, bid])
         else:
-            three_of_a_kind.append([sort_string(hand),bid])
+            three_of_a_kind.append([hand,bid])
     elif max_value == 2:
         if values_list.count(2) == 2:
-            two_pairs.append([sort_string(hand),bid])
+            two_pairs.append([hand,bid])
         else:
-            one_pair.append([sort_string(hand),bid])
+            one_pair.append([hand,bid])
     else:
-        high_card.append([sort_string(hand),bid])
+        high_card.append([hand,bid])
 #print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
 
-five_of_a_kind = sort_list_list(five_of_a_kind,5)
-# print(five_of_a_kind)
 four_of_a_kind = sort_list_list(four_of_a_kind,5)
 four_of_a_kind = sort_list_list(four_of_a_kind,4) # 1,2,3,4 are the same
+four_of_a_kind = sort_list_list(four_of_a_kind,3)
+four_of_a_kind = sort_list_list(four_of_a_kind,2)
+four_of_a_kind = sort_list_list(four_of_a_kind,1)
 # print(four_of_a_kind)
 full_house = sort_list_list(full_house,5) # 4,5 are the same
+full_house = sort_list_list(full_house,4)
 full_house = sort_list_list(full_house,3) # 1,2,3 are the same
+full_house = sort_list_list(full_house,2)
+full_house = sort_list_list(full_house,1)
 # print(full_house)
 
 # This method is not suitable for sorting three of a kind, two pairs, pair, or high card.
 three_of_a_kind = sort_list_list(three_of_a_kind,5)
 three_of_a_kind = sort_list_list(three_of_a_kind,4)
 three_of_a_kind = sort_list_list(three_of_a_kind,3) # 1,2,3 are the same
+three_of_a_kind = sort_list_list(three_of_a_kind,2)
+three_of_a_kind = sort_list_list(three_of_a_kind,1)
 #print(three_of_a_kind)
 two_pairs = sort_list_list(two_pairs,5)
 two_pairs = sort_list_list(two_pairs,4) # 4,3 are the same
+two_pairs = sort_list_list(two_pairs,3)
 two_pairs = sort_list_list(two_pairs,2) # 1,2 are the same
+two_pairs = sort_list_list(two_pairs,1)
 # print(two_pairs)
 one_pair = sort_list_list(one_pair,5)
 one_pair = sort_list_list(one_pair,4)
 one_pair = sort_list_list(one_pair,3)
 one_pair = sort_list_list(one_pair,2) # 1,2 are the same
+one_pair = sort_list_list(one_pair,1)
 # print(one_pair)
 high_card = sort_list_list(high_card,5)
 high_card = sort_list_list(high_card,4)
@@ -144,7 +153,7 @@ all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + fo
 for i, hand in enumerate(all_hands):
     rank = i + 1
     bid = hand[1]
-    print('cards: ',hand[0],'bid: ',bid)
+    print('rank: ',rank,' cards: ',hand[0],' bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
 
@@ -161,4 +170,5 @@ I think my program needs to sort them into categories first, and then sort the c
 251603392 answer submitted - wrong answer, too low. Issue found in calling the sort_list function for four_of_a_kind.
 251606919 answer submitted - wrong answer, too low. Issue found in calling the sort_list function for full_house.
 251610788 answer submitted - wrong answer, too low. No idea why. I've checked the logic of calling sort_list for other lists.
+251806792 answer correct! - I misunderstood the secondary ranking requirements.
 '''
