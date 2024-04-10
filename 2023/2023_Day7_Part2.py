@@ -8,6 +8,8 @@ with open("2023/2023_Day7_input.txt") as file_object: # test_input should give a
 
 card_ranking = ['2','3','4','5','6','7','8','9','T','J','Q','K','A']
 reverse_card_ranking = card_ranking[::-1]
+secondary_ranking = ['J','2','3','4','5','6','7','8','9','T','Q','K','A']
+full_input_list = []
 five_of_a_kind = []
 four_of_a_kind = []
 full_house = []
@@ -16,18 +18,28 @@ two_pairs = []
 one_pair = []
 high_card = []
 
-def sort_list_list(input_list,input_int):
-    output_list = []
-    for card in card_ranking:
-        for line in input_list:
-            if line[0][input_int-1]== card:
-                output_list.append(line)
+def secondary_list_sorting(input_list):
+    output_list = input_list
+    for i in [4,3,2,1,0]:
+        temporary_output = []
+        for card in secondary_ranking:
+            for line in output_list:
+                if line [0][i] == card:
+                    temporary_output.append(line)
+        output_list = temporary_output
     return output_list
 
 for j,line in enumerate(file_content):
     hand = line.split()[0]
     bid = int(line.split()[1])
     #print("line index: ", index,", hand: ",hand,", bid: ",bid)
+    full_input_list.append([hand,bid])
+    
+secondary_ordered_list = secondary_list_sorting(full_input_list)
+
+for line in secondary_ordered_list:
+    #print(line)
+    hand,bid = line[0],line[1]
     cards = {}
     for card in hand:
         if card not in cards:
@@ -36,14 +48,16 @@ for j,line in enumerate(file_content):
             cards[card] += 1
     #print(cards)
     values_list = list(cards.values())
+    if 'J' in cards:
+        number_of_jacks = cards['J']
+        if number_of_jacks > 1:
+            print(f'cards: {cards}\n{number_of_jacks} jacks found in values_list: {values_list}')
     max_value = max(values_list)
-    #print("max value: ",max_value)
-    #cards["line index"] = index
-    if max_value == 5:
+    if max_value + number_of_jacks == 5:
         five_of_a_kind.append([hand,bid])
-    elif max_value == 4:
+    elif max_value + number_of_jacks == 4:
         four_of_a_kind.append([hand,bid])
-    elif max_value == 3:
+    elif max_value + number_of_jacks == 3:
         if 2 in values_list:
             full_house.append([hand, bid])
         else:
@@ -58,46 +72,6 @@ for j,line in enumerate(file_content):
 #print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
 
 
-
-four_of_a_kind = sort_list_list(four_of_a_kind,5)
-four_of_a_kind = sort_list_list(four_of_a_kind,4) # 1,2,3,4 are the same
-four_of_a_kind = sort_list_list(four_of_a_kind,3)
-four_of_a_kind = sort_list_list(four_of_a_kind,2)
-four_of_a_kind = sort_list_list(four_of_a_kind,1)
-# print(four_of_a_kind)
-full_house = sort_list_list(full_house,5) # 4,5 are the same
-full_house = sort_list_list(full_house,4)
-full_house = sort_list_list(full_house,3) # 1,2,3 are the same
-full_house = sort_list_list(full_house,2)
-full_house = sort_list_list(full_house,1)
-# print(full_house)
-
-# This method is not suitable for sorting three of a kind, two pairs, pair, or high card.
-three_of_a_kind = sort_list_list(three_of_a_kind,5)
-three_of_a_kind = sort_list_list(three_of_a_kind,4)
-three_of_a_kind = sort_list_list(three_of_a_kind,3) # 1,2,3 are the same
-three_of_a_kind = sort_list_list(three_of_a_kind,2)
-three_of_a_kind = sort_list_list(three_of_a_kind,1)
-#print(three_of_a_kind)
-two_pairs = sort_list_list(two_pairs,5)
-two_pairs = sort_list_list(two_pairs,4) # 4,3 are the same
-two_pairs = sort_list_list(two_pairs,3)
-two_pairs = sort_list_list(two_pairs,2) # 1,2 are the same
-two_pairs = sort_list_list(two_pairs,1)
-# print(two_pairs)
-one_pair = sort_list_list(one_pair,5)
-one_pair = sort_list_list(one_pair,4)
-one_pair = sort_list_list(one_pair,3)
-one_pair = sort_list_list(one_pair,2) # 1,2 are the same
-one_pair = sort_list_list(one_pair,1)
-# print(one_pair)
-high_card = sort_list_list(high_card,5)
-high_card = sort_list_list(high_card,4)
-high_card = sort_list_list(high_card,3)
-high_card = sort_list_list(high_card,2)
-high_card = sort_list_list(high_card,1)
-# print(high_card)
-
 total_winnings = 0
 all_hands = high_card + one_pair + two_pairs + three_of_a_kind + full_house + four_of_a_kind + five_of_a_kind
 for i, hand in enumerate(all_hands):
@@ -109,8 +83,9 @@ for i, hand in enumerate(all_hands):
 
 print('number of lines processed: ',rank)
 print(f"total_winnings: {total_winnings}")
+
 '''
-The lowest ranked hands will be 23456, 23457, 23458
+The lowest ranked hands will be J2345, J2346, J2347...
 The highest ranks will be AAAAA, AAAAJ, AAAJJ, ...      ..., QQQQJ, QQQJJ, QQJJJ, QJJJJ, TTTTT, ...
 
 
