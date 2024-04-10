@@ -57,8 +57,6 @@ for j,line in enumerate(file_content):
         high_card.append([hand,bid])
 #print('5 of a kind: ',five_of_a_kind,'\n4 of a kind: ',four_of_a_kind,'\nfull house: ',full_house,'\n3 of a kind: ',three_of_a_kind,'\n2 pair: ',two_pairs,'\n1 pair: ',one_pair,'\nhigh card: ',high_card)
 
-
-
 four_of_a_kind = sort_list_list(four_of_a_kind,5)
 four_of_a_kind = sort_list_list(four_of_a_kind,4) # 1,2,3,4 are the same
 four_of_a_kind = sort_list_list(four_of_a_kind,3)
