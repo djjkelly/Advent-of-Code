@@ -45,28 +45,44 @@ for line in secondary_ordered_list:
             cards[card] = 1
         else:
             cards[card] += 1
-    #print(cards)
-    values_list = list(cards.values())
-    max_value = max(values_list)
+    print('NEW hand: ',hand,'Cards: ',cards)
     if 'J' in cards:
         number_of_jacks = cards['J']
-        print(f'\n New hand found with Jack(s)! Hand: {hand} Jack(s) found: {number_of_jacks}')
-        for card,value in cards.items():
-            if card == 'J':
-                continue
-            print('card',card,'value',value)
-            if max_value == 1:
-                cards[card] = value + number_of_jacks
-                print(f'highest unique card: {card} card quantities updated: ', cards)
-                break
-            if value > 1:
-                print('highest card: ',card)
-                cards[card] = value + number_of_jacks
-                print('card quantities updated for multi-card: ', cards)
-                break
+        if cards['J'] != 5:
+            del cards['J']
+            values_list = list(cards.values())
+            max_value = max(values_list)
+            #print(f'Quantity of jack(s) found: \'J\': {number_of_jacks}')
+            previous_card = None
+            highest_single_card = None
+            pair_already_checked = False
+            for card,value in cards.items():
+                if value > 1 and not values_list.count(2) == 2: # handles cases where cards are prioritised on number, not rank (all cases except high cards and two pairs)
+                    cards[card] = value + number_of_jacks
+                    break
+                elif max_value == 1: # handles case where all non-jack cards are unique
+                    if highest_single_card:
+                        if secondary_ranking.index(card) > secondary_ranking.index(highest_single_card):
+                            highest_single_card = card
+                    else:
+                        highest_single_card = card
+                    continue
+                elif values_list.count(2) == 2: # handles two pairs case
+                    if pair_already_checked:
+                        if secondary_ranking.index(card) > secondary_ranking.index(previous_card):
+                            highest_card = card
+                        else:
+                            highest_card = previous_card
+                        cards[highest_card] = value + number_of_jacks
+                        break
+                    if value == 2:
+                        pair_already_checked = True
+                    previous_card = card
+            if highest_single_card:
+                cards[highest_single_card] = 1 + number_of_jacks
+        print("Jacks reassigned: ",cards)
     values_list = list(cards.values())
     max_value = max(values_list)
-    print(f'max value: {max_value}')
     if max_value == 5:
         five_of_a_kind.append([hand,bid])
     elif max_value == 4:
@@ -95,7 +111,6 @@ for i, hand in enumerate(all_hands):
     #print('rank: ',rank,' cards: ',hand[0],' bid: ',bid)
     hand_winnings = rank * hand[1]
     total_winnings += hand_winnings
-
 print('number of lines processed: ',rank)
 print(f"total_winnings: {total_winnings}")
 
