@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/8
+import math
 
-with open("2023/2023_Day8_testinput.txt") as file_object:
+with open("2023/2023_Day8_input.txt") as file_object:
     file_content = file_object.readlines()
 
 instructions = ''
 network_map = {}
-final_count = 0
+final_count = 1
 start_locations = []
-target_locations = 'ZZZ'
 first_line = True
 for line in file_content:
     if first_line:
@@ -25,13 +25,10 @@ print(f'network_map loaded. Commencing while loop. start_locations: \n{start_loc
 
 # TEST - Correct answer should be 6
 
-def advance_all_elements(locations,instruction):
-    next_elements = []
-    for location in locations:
-        next_element = network_map[location][instruction]
-        next_elements.append(next_element)
-    return next_elements
-# print(f'lookup element test: ',advance_all_elements(['11A','22A'],'L')) # should print ['11B', '22B'] for testinput.
+def look_up_next_element(location,instruction):
+    next_element = network_map[location][instruction]
+    return next_element
+#print(f'lookup element test: ',look_up_next_element('DHD','L'))
 
 def initialise_findings_table(start_locations):
     output = []
@@ -39,38 +36,34 @@ def initialise_findings_table(start_locations):
         output.append([])
     return output
 findings = initialise_findings_table(start_locations)
-print(findings)
 
+count_array = []
 locations = start_locations
-all_locations_arrived = False
-i = 0
-while not all_locations_arrived:
-    locations_arrived = []
-    final_count += 1
-    if final_count % 1000000 == 0:
-        print(f'Loop {final_count}. Not all locations have arrived. While loop continuing...')
-    instruction = instructions[i]
-    #print('Original locations: ',locations ,'Current instruction: ', instruction )
-    locations = advance_all_elements(locations,instruction)
-    #print('New locations: ', locations)
-    for index,location in enumerate(locations):
-        if location[2] == 'Z':
-            locations_arrived.append(True)
-            findings[index].append(final_count)
-            print('Z found!, index: ',final_count)
-        else:
-            locations_arrived.append(False)
-    #print('locations_arrived',locations_arrived)
-    if all(locations_arrived):
-        all_locations_arrived = True
-        #print('all locations arrived!')
-        break
-    #print('length of locations: ',len(locations))
-    i += 1
-    if i == len(locations):
-        i = 0
-print('FINAL COUNT! ',final_count)
+for location_number in range(len(locations)):
+    answer_found = False
+    count = 0
+    location = locations[location_number]
+    #print('C ommencing search from new starting location:', location,'. Location number: ', location_number)
+    while answer_found is False:
+        for instruction in instructions:
+            #print('new instruction: ', instruction)
+            location = look_up_next_element(location,instruction)
+            #print(f'next location found: {location}')
+            count += 1
+            if location[2] == 'Z':
+                answer_found = True
+                break
+    print('Answer found! location ',locations[location_number],'number of moves: ',count)
+    count_array.append(count)
+    print(count_array)
 
+for element in count_array:
+    print(element)
+    final_count = math.lcm(int(element),final_count)
+
+print('Final count: ',final_count)
 '''
+65387731292816696112780371 - wrong answer, too high. There must be a lower multiple of all these numbers.
+23977527174353 = correct answer
 
 '''
