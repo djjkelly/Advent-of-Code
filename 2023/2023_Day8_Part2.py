@@ -33,34 +33,43 @@ def advance_all_elements(locations,instruction):
     return next_elements
 # print(f'lookup element test: ',advance_all_elements(['11A','22A'],'L')) # should print ['11B', '22B'] for testinput.
 
+def initialise_findings_table(start_locations):
+    output = []
+    for index in range(len(start_locations)):
+        output.append([])
+    return output
+findings = initialise_findings_table(start_locations)
+print(findings)
+
 locations = start_locations
 all_locations_arrived = False
 i = 0
 while not all_locations_arrived:
     locations_arrived = []
-    final_count +=1
-    if final_count % 10000 == 0:
+    final_count += 1
+    if final_count % 1000000 == 0:
         print(f'Loop {final_count}. Not all locations have arrived. While loop continuing...')
     instruction = instructions[i]
-    print('Original locations: ',locations ,'Current instruction: ', instruction )
+    #print('Original locations: ',locations ,'Current instruction: ', instruction )
     locations = advance_all_elements(locations,instruction)
-    print('New locations: ', locations)
-    for location in locations:
-        print('location[2]: ',location[2])
+    #print('New locations: ', locations)
+    for index,location in enumerate(locations):
         if location[2] == 'Z':
             locations_arrived.append(True)
+            findings[index].append(final_count)
+            print('Z found!, index: ',final_count)
         else:
             locations_arrived.append(False)
-    print('locations_arrived',locations_arrived)
+    #print('locations_arrived',locations_arrived)
     if all(locations_arrived):
         all_locations_arrived = True
-        print('all locations arrived!')
+        #print('all locations arrived!')
         break
-    print('length of locations: ',len(locations))
+    #print('length of locations: ',len(locations))
     i += 1
     if i == len(locations):
         i = 0
-print(final_count)
+print('FINAL COUNT! ',final_count)
 
 '''
 
