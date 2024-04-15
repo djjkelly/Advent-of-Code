@@ -31,27 +31,35 @@ def advance_all_elements(locations,instruction):
         next_element = network_map[location][instruction]
         next_elements.append(next_element)
     return next_elements
-#print(f'lookup element test: ',look_up_next_element('DHD','L'))
+# print(f'lookup element test: ',advance_all_elements(['11A','22A'],'L')) # should print ['11B', '22B'] for testinput.
 
 locations = start_locations
 all_locations_arrived = False
-locations_arrived = []
-while_loop_counter = 0
+i = 0
 while not all_locations_arrived:
-    while_loop_counter +=1
-    print(f'Loop {while_loop_counter}. Not all locations have arrived. While loop continuing...')
-    for instruction in instructions: # not convinced this for loop in a while loop structure is still valid for this problem.
-        final_count += 1
-        locations = advance_all_elements(locations,instruction)
-        for location in locations:
-            if location[2] == 'Z':
-                locations_arrived.append(True)
-            else:
-                locations_arrived.append(False)
-        if all(locations_arrived):
-            all_locations_arrived = True
-            break
-
+    locations_arrived = []
+    final_count +=1
+    if final_count % 10000 == 0:
+        print(f'Loop {final_count}. Not all locations have arrived. While loop continuing...')
+    instruction = instructions[i]
+    print('Original locations: ',locations ,'Current instruction: ', instruction )
+    locations = advance_all_elements(locations,instruction)
+    print('New locations: ', locations)
+    for location in locations:
+        print('location[2]: ',location[2])
+        if location[2] == 'Z':
+            locations_arrived.append(True)
+        else:
+            locations_arrived.append(False)
+    print('locations_arrived',locations_arrived)
+    if all(locations_arrived):
+        all_locations_arrived = True
+        print('all locations arrived!')
+        break
+    print('length of locations: ',len(locations))
+    i += 1
+    if i == len(locations):
+        i = 0
 print(final_count)
 
 '''
