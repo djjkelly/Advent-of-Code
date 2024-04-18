@@ -6,7 +6,7 @@ with open("2023/2023_Day10_input.txt") as file_object:
 
 test1_content = ['.....','.S-7.','.|.|.','.L-J.','.....']
 test2_content = ['7-F7-','.FJ|7','SJLL7','|F--J','LJ.LJ']
-file_content = test1_content # TEST INPUT !
+file_content = test2_content # TEST INPUT !
 
 map_list = []
 for line_number,line in enumerate(file_content):
@@ -19,7 +19,7 @@ for line_number,line in enumerate(file_content):
     map_list.append(char_list)
     max_line_number = line_number
     max_char_number = char_number
-#print(map_list)
+    print(char_list)
 
 print('Commencing analysis. Start point at line index:',start_line,', character index:',start_char)
 distance_from_start = 0
@@ -31,27 +31,51 @@ while map_list[line_number][char_number] != 'S' or is_starting:
     is_starting = False
     current_char = map_list[line_number][char_number]
     print(f'Iterating while loop. Current char : \'{current_char}\'')
-    if line_number > 0: # evaluate up
-        next_char = map_list[line_number - 1][char_number]
-        if next_char == '7' or next_char == '|' or next_char == 'F':
-            print('Connected to loop above! next_char = ',next_char)
-
-    if char_number > 0: # evaluate left
-        next_char = map_list[line_number][char_number - 1]
-        if next_char == 'L' or next_char == '-' or next_char == 'F':
-            print('Connected to loop left! next_char = ',next_char)
-
-    if line_number < max_line_number: # evaluate down
-        next_char = map_list[line_number + 1][char_number]
-        if next_char == 'J' or next_char == '|' or next_char == 'L':
-            print('Connected to loop down! next_char = ',next_char)
-
-    if char_number < max_char_number: # evaluate right
-        next_char = map_list[line_number][char_number + 1]
-        if next_char == 'J' or next_char == '-' or next_char == '7':
-            print('Connected to loop right! next_char = ',next_char)
-    
-print(distance_from_start)
+    distance_from_start += 1
+    if line_number > 0: # setting char_above
+        char_above = map_list[line_number - 1][char_number]
+    else:
+        char_above = ''
+    if char_number > 0: # setting char_left
+        char_left = map_list[line_number][char_number - 1]
+    else:
+        char_left = ''
+    if line_number < max_line_number: # setting char_below
+        char_below = map_list[line_number + 1][char_number]
+    else:
+        char_below = ''
+    if char_number < max_char_number: # setting char_right
+        char_right = map_list[line_number][char_number + 1]
+    else:
+        char_right = ''
+    if char_above == '7' or char_above == '|' or char_above == 'F':
+        map_list[line_number][char_number] = '0'
+        next_char = char_above
+        line_number -= 1
+    elif char_left == 'L' or char_left == '-' or char_left == 'F':
+        map_list[line_number][char_number] = '0'
+        next_char = char_left
+        char_number -= 1
+    elif char_below == 'J' or char_below == '|' or char_below == 'L':
+        map_list[line_number][char_number] = '0'
+        next_char = char_below
+        line_number += 1
+    elif char_right == 'J' or char_right == '-' or char_right == '7':
+        map_list[line_number][char_number] = '0'
+        next_char = char_right
+        char_number += 1
+    elif char_above == '0' or char_left == '0' or char_below == '0' or char_right == '0':
+        print('Loop closed')
+        next_char == '0'
+        char_number += 1
+        break
+    print('next_char: ',next_char,'. Current distance_from_start :',distance_from_start)
+print('Total distance from start:',distance_from_start)
+if distance_from_start % 2 == 0:
+    farthest_distance = distance_from_start // 2
+else:
+    farthest_distance = distance_from_start // 2 + 1
+print('Farthest distance from start: ', farthest_distance)
 
 '''
 The task is to find the farthest away point on the loop.
@@ -60,4 +84,5 @@ I see no reason why the loop shouldn't be navigated in a single direction.
 The distance_from_start should be half the distance around the whole loop.
 The pipes cannot connect diagonally, they can only connect up,down,left,right.
 I need to make sure the loop doesn't start counting in the direction it came - I could achieve this by deleting pipes from the map_list as I travel through (replace with '.').
+Correct answer obtained for for test1 data. Error discovered for test2 data. Need a new rule to exclude parts which aren't part of the loop.
 '''
