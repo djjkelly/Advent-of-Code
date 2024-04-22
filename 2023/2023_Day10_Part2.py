@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/10
 
-with open("2023/2023_Day10_test2_input.txt") as file_object:
+with open("2023/2023_Day10_test1_input.txt") as file_object:
     file_content = file_object.readlines()
 
 map_list = []
@@ -113,43 +113,98 @@ for line_number,line in enumerate(route_list):
     print(new_line)
     route_list[line_number] = list(new_line)
 
-def search_and_replace(line_number, char_number):
+expanded_list = []
+max_line_number = len(route_list)
+max_char_number = len(route_list[0])
+print(type(route_list[0]))
+for line in route_list:
+    new_line = []
+    for character in line:
+        new_line.append(character)
+        new_line.append(' ')
+    expanded_list.append(new_line)
+    expanded_list.append(([' ']* len(new_line)))
+
+#for row in route_list:
+    #print(''.join(row))
+
+for row in expanded_list:
+    print(''.join(row))
+
+instructions_list.insert(0,instructions_list[0])
+
+line_number = (start_line+1) * 2
+char_number = (start_char+1) * 2
+for i in range(distance_from_start):
+    if instructions_list[i] == 'up':
+        line_number -= 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+        line_number -= 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+    if instructions_list[i] == 'left':
+        char_number -= 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+        char_number -= 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+    if instructions_list[i] == 'down':
+        line_number += 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+        line_number += 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+    if instructions_list[i] == 'right':
+        char_number += 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+        char_number += 1
+        if expanded_list[line_number][char_number] == ' ':
+            expanded_list[line_number][char_number] = 'x'
+        
+
+for row in expanded_list:
+    print(''.join(row))
+
+def search_and_replace(line_number, char_number ,list_of_lists):
     new_coordinates_to_check = []
     if line_number > 0: # searching up
-        if route_list[line_number-1][char_number] == '.':
-            route_list[line_number-1][char_number] = '0'
+        if list_of_lists[line_number-1][char_number] == '.' or list_of_lists[line_number-1][char_number] == ' ':
+            list_of_lists[line_number-1][char_number] = '0'
             new_coordinates_to_check.append([line_number - 1,char_number])
     if char_number > 0: # searching left
-        if route_list[line_number][char_number-1] == '.':
-            route_list[line_number][char_number-1] = '0'
+        if list_of_lists[line_number][char_number-1] == '.' or list_of_lists[line_number][char_number-1] == ' ':
+            list_of_lists[line_number][char_number-1] = '0'
             new_coordinates_to_check.append([line_number,char_number - 1])
     if line_number < len(route_list)-1: # searching down
-        if route_list[line_number+1][char_number] == '.':
-            route_list[line_number+1][char_number] = '0'
+        if list_of_lists[line_number+1][char_number] == '.' or list_of_lists[line_number+1][char_number] == ' ':
+            list_of_lists[line_number+1][char_number] = '0'
             new_coordinates_to_check.append([line_number + 1,char_number])
     if char_number < len(route_list[0])-1: # searching right
-        if route_list[line_number][char_number+1] == '.':
-            route_list[line_number][char_number+1] = '0'
+        if list_of_lists[line_number][char_number+1] == '.' or list_of_lists[line_number][char_number+1] == ' ':
+            list_of_lists[line_number][char_number+1] = '0'
             new_coordinates_to_check.append([line_number,char_number+1])
     return new_coordinates_to_check
 
 flood_coordinates = [[0,0]]
 flood_coordinates_found = []
 while len(flood_coordinates) > 0:
-    for coordinates in flood_coordinates:
-        line_number = coordinates[0]
-        char_number = coordinates[1]
+    for coordinate_pair in flood_coordinates:
+        line_number = coordinate_pair[0]
+        char_number = coordinate_pair[1]
         print('line_no',line_number,'char_no',char_number)
-        flood_coordinates.remove(coordinates)
-        new_coordinates_to_check = search_and_replace(line_number,char_number)
-        for coordinates in new_coordinates_to_check:
-            if coordinates not in flood_coordinates_found:
-                flood_coordinates.append(coordinates)
-            coordinates.append(flood_coordinates_found)
-    for line in route_list:
+        flood_coordinates.remove(coordinate_pair)
+        new_coordinates_to_check = search_and_replace(line_number,char_number, expanded_list) # needs to be changed if list is changed
+        for coordinate_pair in new_coordinates_to_check:
+            if coordinate_pair not in flood_coordinates_found:
+                flood_coordinates.append(coordinate_pair)
+            coordinate_pair.append(flood_coordinates_found)
+    for line in expanded_list: # needs to be changed if list is changed
         print(line)
     print(flood_coordinates)
-
 
 '''
 My interpretation is that you need to start from the outside, as the edge of the data is the main distinguishing factor differentiating inside vs outside.
