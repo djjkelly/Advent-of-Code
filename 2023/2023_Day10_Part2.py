@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/10
 
-with open("2023/2023_Day10_input.txt") as file_object:
+with open("2023/2023_Day10_test2_input.txt") as file_object:
     file_content = file_object.readlines()
 
 map_list = []
@@ -111,15 +111,45 @@ for line_number,line in enumerate(route_list):
     for character in line:
         new_line += character
     print(new_line)
-    route_list[line_number] = new_line
+    route_list[line_number] = list(new_line)
+
+def search_and_replace(line_number, char_number):
+    new_coordinates_to_check = []
+    if line_number > 0: # searching up
+        if route_list[line_number-1][char_number] == '.':
+            route_list[line_number-1][char_number] = '0'
+            new_coordinates_to_check.append([line_number - 1,char_number])
+    if char_number > 0: # searching left
+        if route_list[line_number][char_number-1] == '.':
+            route_list[line_number][char_number-1] = '0'
+            new_coordinates_to_check.append([line_number,char_number - 1])
+    if line_number < len(route_list)-1: # searching down
+        if route_list[line_number+1][char_number] == '.':
+            route_list[line_number+1][char_number] = '0'
+            new_coordinates_to_check.append([line_number + 1,char_number])
+    if char_number < len(route_list[0])-1: # searching right
+        if route_list[line_number][char_number+1] == '.':
+            route_list[line_number][char_number+1] = '0'
+            new_coordinates_to_check.append([line_number,char_number+1])
+    return new_coordinates_to_check
 
 flood_coordinates = [[0,0]]
-previous_flood_coordinates = None
-while flood_coordinates == previous_flood_coordinates:
-    for coordinate in flood_coordinates:
-        line_number = coordinate[0]
-        char_number = coordinate[1]
-        previous_flood_coordinates = flood_coordinates
+flood_coordinates_found = []
+while len(flood_coordinates) > 0:
+    for coordinates in flood_coordinates:
+        line_number = coordinates[0]
+        char_number = coordinates[1]
+        print('line_no',line_number,'char_no',char_number)
+        flood_coordinates.remove(coordinates)
+        new_coordinates_to_check = search_and_replace(line_number,char_number)
+        for coordinates in new_coordinates_to_check:
+            if coordinates not in flood_coordinates_found:
+                flood_coordinates.append(coordinates)
+            coordinates.append(flood_coordinates_found)
+    for line in route_list:
+        print(line)
+    print(flood_coordinates)
+
 
 '''
 My interpretation is that you need to start from the outside, as the edge of the data is the main distinguishing factor differentiating inside vs outside.
