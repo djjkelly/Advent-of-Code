@@ -33,7 +33,6 @@ while map_list[line_number][char_number] != 'S' or is_starting:
     current_char = map_list[line_number][char_number]
     map_list[line_number][char_number] = '0'
     route_list[line_number][char_number] = current_char
-    #print(f'Iterating while loop. Current char : \'{current_char}\'')
     distance_from_start += 1
     if line_number > 0: # setting char_above
         char_up = map_list[line_number - 1][char_number]
@@ -51,6 +50,16 @@ while map_list[line_number][char_number] != 'S' or is_starting:
         char_right = map_list[line_number][char_number + 1]
     else:
         char_right = ''
+    if is_starting:
+        if char_up == '7' or char_up == '|' or char_up == 'F':
+            initial_direction = 'up'
+        elif char_left == 'L' or char_left == '-' or char_left == 'F':
+            initial_direction = 'left'
+        elif char_down == 'J' or char_down == '|' or char_down == 'L':
+            initial_direction = 'down'
+        elif char_right == 'J' or char_right == '-' or char_right == '7':
+            initial_direction = 'down'
+        instructions_list.append(initial_direction)
     if (is_starting or next_direction == 'up') and (char_up == '7' or char_up == '|' or char_up == 'F'):
         if char_up == '7':
             next_direction = 'left'
@@ -95,12 +104,7 @@ while map_list[line_number][char_number] != 'S' or is_starting:
     #print('next_char: ',next_char,'. Current distance_from_start :',distance_from_start)
     is_starting = False
     instructions_list.append(next_direction)
-#print('Total distance from start:',distance_from_start)
-if distance_from_start % 2 == 0:
-    farthest_distance = distance_from_start // 2
-else:
-    farthest_distance = distance_from_start // 2 + 1
-print('Farthest distance from start: ', farthest_distance)
+print('Total distance from start:',distance_from_start)
 
 route_list.insert(0,['.']*len(route_list[0]))
 route_list.append(['.']*len(route_list[0]))
@@ -116,7 +120,6 @@ for line_number,line in enumerate(route_list):
 expanded_list = []
 max_line_number = len(route_list)
 max_char_number = len(route_list[0])
-print(type(route_list[0]))
 for line in route_list:
     new_line = []
     for character in line:
@@ -125,13 +128,8 @@ for line in route_list:
     expanded_list.append(new_line)
     expanded_list.append(([' ']* len(new_line)))
 
-#for row in route_list:
+#for row in expanded_list:
     #print(''.join(row))
-
-for row in expanded_list:
-    print(''.join(row))
-
-instructions_list.insert(0,'up')
 
 line_number = (start_line+1) * 2
 char_number = (start_char+1) * 2
@@ -164,10 +162,9 @@ for i in range(distance_from_start):
         char_number += 1
         if expanded_list[line_number][char_number] == ' ':
             expanded_list[line_number][char_number] = 'x'
-        
 
-for row in expanded_list:
-    print(''.join(row))
+#for row in expanded_list:
+    #print(''.join(row))
 
 def search_and_replace(line_number, char_number ,list_of_lists):
     new_coordinates_to_check = []
@@ -195,16 +192,15 @@ while len(flood_coordinates) > 0:
     for coordinate_pair in flood_coordinates:
         line_number = coordinate_pair[0]
         char_number = coordinate_pair[1]
-        print('line_no',line_number,'char_no',char_number)
         flood_coordinates.remove(coordinate_pair)
         new_coordinates_to_check = search_and_replace(line_number,char_number,expanded_list) # needs to be changed if list is changed
         for coordinate_pair in new_coordinates_to_check:
             if coordinate_pair not in flood_coordinates_found:
                 flood_coordinates.append(coordinate_pair)
             coordinate_pair.append(flood_coordinates_found)
-    for line in expanded_list: # needs to be changed if list is changed
-        print(''.join(line))
-    print(flood_coordinates)
+    #for line in expanded_list: # needs to be changed if list is changed
+        #print(''.join(line))
+    #print(flood_coordinates)
 
 total_count = 0
 for line in expanded_list:
@@ -220,7 +216,5 @@ By adding a row and column before and after the data I can make sure all outside
 Correct test1 answer obtained of 4
 Correct test2 answer obtained of 8
 Correct final answer of 563 obtained.
-
-This script only works because I've hardcoded the right initial instruction ('up') on line 134.
 
 '''
