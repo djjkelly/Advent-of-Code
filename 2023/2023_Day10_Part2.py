@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/10
 
-with open("2023/2023_Day10_test1_input.txt") as file_object:
+with open("2023/2023_Day10_input.txt") as file_object:
     file_content = file_object.readlines()
 
 map_list = []
@@ -131,7 +131,7 @@ for line in route_list:
 for row in expanded_list:
     print(''.join(row))
 
-instructions_list.insert(0,instructions_list[0])
+instructions_list.insert(0,'up')
 
 line_number = (start_line+1) * 2
 char_number = (start_char+1) * 2
@@ -179,11 +179,11 @@ def search_and_replace(line_number, char_number ,list_of_lists):
         if list_of_lists[line_number][char_number-1] == '.' or list_of_lists[line_number][char_number-1] == ' ':
             list_of_lists[line_number][char_number-1] = '0'
             new_coordinates_to_check.append([line_number,char_number - 1])
-    if line_number < len(route_list)-1: # searching down
+    if line_number < len(list_of_lists) -1: # searching down
         if list_of_lists[line_number+1][char_number] == '.' or list_of_lists[line_number+1][char_number] == ' ':
             list_of_lists[line_number+1][char_number] = '0'
             new_coordinates_to_check.append([line_number + 1,char_number])
-    if char_number < len(route_list[0])-1: # searching right
+    if char_number < len(list_of_lists[0]) -1: # searching right
         if list_of_lists[line_number][char_number+1] == '.' or list_of_lists[line_number][char_number+1] == ' ':
             list_of_lists[line_number][char_number+1] = '0'
             new_coordinates_to_check.append([line_number,char_number+1])
@@ -197,17 +197,30 @@ while len(flood_coordinates) > 0:
         char_number = coordinate_pair[1]
         print('line_no',line_number,'char_no',char_number)
         flood_coordinates.remove(coordinate_pair)
-        new_coordinates_to_check = search_and_replace(line_number,char_number, expanded_list) # needs to be changed if list is changed
+        new_coordinates_to_check = search_and_replace(line_number,char_number,expanded_list) # needs to be changed if list is changed
         for coordinate_pair in new_coordinates_to_check:
             if coordinate_pair not in flood_coordinates_found:
                 flood_coordinates.append(coordinate_pair)
             coordinate_pair.append(flood_coordinates_found)
     for line in expanded_list: # needs to be changed if list is changed
-        print(line)
+        print(''.join(line))
     print(flood_coordinates)
+
+total_count = 0
+for line in expanded_list:
+    line_count = line.count('.')
+    total_count += line_count
+print(total_count)
 
 '''
 My interpretation is that you need to start from the outside, as the edge of the data is the main distinguishing factor differentiating inside vs outside.
 If there's a '.' on the first/last row or column, it must be outside the loop.
 By adding a row and column before and after the data I can make sure all outside regions are connected.
+
+Correct test1 answer obtained of 4
+Correct test2 answer obtained of 8
+Correct final answer of 563 obtained.
+
+This script only works because I've hardcoded the right initial instruction ('up') on line 134.
+
 '''
