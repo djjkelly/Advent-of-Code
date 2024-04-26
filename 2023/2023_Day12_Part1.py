@@ -25,12 +25,21 @@ def remove_wrong_numbers(test_list,number_expected):
         count = string.count('1')
         if count != number_expected:
             new_test_list.remove(string)
-            print('removing string: ',string)
-    print('length of new test list:',len(new_test_list))
     return new_test_list
 
-def make_full_strings(test_string,condition_records):
-    return 1
+def make_full_strings(condition_records,test_list):
+    print('Condition records: ',condition_records)
+    new_list = []
+    for test_string in test_list:
+        test_index = 0
+        new_condition_records = condition_records
+        for condition_index,character in enumerate(condition_records):
+            if character == '?':
+                new_condition_records = new_condition_records[:condition_index]+test_string[test_index] + new_condition_records[condition_index + 1:]
+                #print(f'replacing character at {condition_index} with new character: {test_string[test_index]}')
+                test_index += 1
+        new_list.append(new_condition_records)
+    return new_list
 
 def check_permutation(string):
     is_viable = False
@@ -67,10 +76,11 @@ for line_no,line in enumerate(content_list):
     #print(f'{damaged_springs_found} springs found out of a total of {damaged_springs_total} damaged springs. Remaining springs_to_find: {springs_to_find}')
     print(f'looking for springs_to_find of {springs_to_find} amongst {uncertain_springs} uncertain_springs')
     test_list = generate_combinations(uncertain_springs)
-    print(test_list)
     test_list = remove_wrong_numbers(test_list,springs_to_find)
-    print('combinations predicted:',math.comb(uncertain_springs,springs_to_find))
-    #print(test_list)
+    #print('test list with wrong combinations removed:',test_list)
+    #print('combinations predicted:',math.comb(uncertain_springs,springs_to_find))
+    test_list = make_full_strings(condition_records,test_list)
+    print('full strings test list: ',test_list)
 
 
 print('\nTotal possibilities: ',total_possibilities)
