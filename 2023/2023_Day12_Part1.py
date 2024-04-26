@@ -16,17 +16,13 @@ for line in file_content:
     damaged_group_sizes = damaged_group_sizes.split(',')
     content_list.append([condition_records,damaged_group_sizes])
 
-def generate_combinations(uncertain_springs):
+def generate_combinations(uncertain_springs,number_expected):
     all_combinations = [''.join(seq) for seq in product('01',repeat=uncertain_springs)]
-    return all_combinations
-
-def remove_wrong_numbers(test_list,number_expected):
-    new_test_list = test_list.copy()
-    for string in test_list:
-        count = string.count('1')
-        if count != number_expected:
-            new_test_list.remove(string)
-    return new_test_list
+    relevant_combinations = []
+    for string in all_combinations:
+        if string.count('1') == number_expected:
+            relevant_combinations.append(string)
+    return relevant_combinations
 
 def make_full_strings(condition_records,test_list):
     new_list = []
@@ -66,7 +62,7 @@ Total for all lines should be 21 arrangements (1 + 4 + 1 + 1 + 4 + 10)
 '''
 total_possibilities = 0
 for line_no,line in enumerate(content_list):
-    line = content_list[848]
+    #line = content_list[848]
     print(f'\nStarting line {line_no+1}: {line}')
     condition_records, damaged_group_sizes = line[0],line[1]
     line_possibilities = 0
@@ -88,14 +84,12 @@ for line_no,line in enumerate(content_list):
     springs_to_find = damaged_springs_total - damaged_springs_found
     #print(f'{damaged_springs_found} springs found out of a total of {damaged_springs_total} damaged springs. Remaining springs_to_find: {springs_to_find}')
     print(f'looking for damaged springs_to_find of {springs_to_find} amongst {uncertain_springs} uncertain_springs')
-    cProfile.run('generate_combinations(uncertain_springs)')
-    test_list = generate_combinations(uncertain_springs)
-    cProfile.run('remove_wrong_numbers(test_list,springs_to_find)')
-    test_list = remove_wrong_numbers(test_list,springs_to_find)
+    #cProfile.run('generate_combinations(uncertain_springs,springs_to_find)')
+    test_list = generate_combinations(uncertain_springs,springs_to_find)
     #print('combinations predicted:',math.comb(uncertain_springs,springs_to_find))
-    cProfile.run('make_full_strings(condition_records,test_list)')
+    #cProfile.run('make_full_strings(condition_records,test_list)')
     test_list = make_full_strings(condition_records,test_list)
-    cProfile.run('count_possibilities(test_list,damaged_group_sizes)')
+    #cProfile.run('count_possibilities(test_list,damaged_group_sizes)')
     line_possibilities = count_possibilities(test_list,damaged_group_sizes)
     print(line_possibilities)
     total_possibilities += line_possibilities
