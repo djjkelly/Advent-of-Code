@@ -4,7 +4,7 @@
 import math
 from itertools import product
 
-with open("2023/2023_Day12_testinput.txt") as file_object:
+with open("2023/2023_Day12_input.txt") as file_object:
     file_content = file_object.readlines()
 
 content_list = []
@@ -28,7 +28,6 @@ def remove_wrong_numbers(test_list,number_expected):
     return new_test_list
 
 def make_full_strings(condition_records,test_list):
-    print('Condition records: ',condition_records)
     new_list = []
     for test_string in test_list:
         test_index = 0
@@ -41,9 +40,27 @@ def make_full_strings(condition_records,test_list):
         new_list.append(new_condition_records)
     return new_list
 
-def check_permutation(string):
-    is_viable = False
-    return is_viable
+def format_strings_as_damaged_group_sizes(input_list,damaged_group_sizes):
+    count = 0
+    print('Searching list for the following damaged group sizes:',damaged_group_sizes)
+    for string in input_list:
+        group_sizes = []
+        group_size = 0
+        print('string: ',string)
+        for character in string:
+            if character == '#' or character == '1':
+                group_size += 1
+            if character == '.' or character == '0':
+                if group_size > 0:
+                    group_sizes.append(str(group_size))
+                group_size = 0
+        if group_size > 0:
+            group_sizes.append(str(group_size))
+        print('group sizes found:',group_sizes)
+        if group_sizes == damaged_group_sizes:
+            count += 1
+            print('Match found! count increasing to ',count)
+    return count
 
 '''
 Test input expectations:
@@ -52,7 +69,7 @@ Total for all lines should be 21 arrangements (1 + 4 + 1 + 1 + 4 + 10)
 '''
 total_possibilities = 0
 for line_no,line in enumerate(content_list):
-    print(f'\nStarting line {line_no}: {line}')
+    print(f'\nStarting line {line_no+1}: {line}')
     condition_records, damaged_group_sizes = line[0],line[1]
     line_possibilities = 0
     operational_springs = 0
@@ -74,13 +91,16 @@ for line_no,line in enumerate(content_list):
         damaged_springs_total += int(group)
     springs_to_find = damaged_springs_total - damaged_springs_found
     #print(f'{damaged_springs_found} springs found out of a total of {damaged_springs_total} damaged springs. Remaining springs_to_find: {springs_to_find}')
-    print(f'looking for springs_to_find of {springs_to_find} amongst {uncertain_springs} uncertain_springs')
+    print(f'looking for damaged springs_to_find of {springs_to_find} amongst {uncertain_springs} uncertain_springs')
     test_list = generate_combinations(uncertain_springs)
     test_list = remove_wrong_numbers(test_list,springs_to_find)
     #print('test list with wrong combinations removed:',test_list)
     #print('combinations predicted:',math.comb(uncertain_springs,springs_to_find))
     test_list = make_full_strings(condition_records,test_list)
-    print('full strings test list: ',test_list)
+    #print('full strings test list: ',test_list)
+    line_possibilities = format_strings_as_damaged_group_sizes(test_list,damaged_group_sizes)
+    print(line_possibilities)
+    total_possibilities += line_possibilities
 
 
 print('\nTotal possibilities: ',total_possibilities)
