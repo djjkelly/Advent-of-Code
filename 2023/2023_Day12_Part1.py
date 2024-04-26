@@ -106,5 +106,6 @@ for line_no,line in enumerate(content_list):
 print('\nTotal possibilities: ',total_possibilities)
 '''
 I need to exclude damaged groups which are directly next to each other.
+Correct answer obtained - 7260
 
 '''
