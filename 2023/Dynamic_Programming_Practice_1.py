@@ -6,25 +6,31 @@ This first example will be me trying to solve the Fibonacci sequence.
 
 # n is the length of the sequence
 n = 7
-result = 0
-results_table = {}
 
+call_count = 0
 def fibonacci(n):
-    print('function called ',' times: calculating fibonacci(',n,')')
+    global call_count
+    call_count += 1
+    #print('function called',call_count,'times: calculating fibonacci(',n,')')
     if n == 0:
         result = 0
-    if n == 1 or n == 2:
+    elif n == 1 or n == 2:
         result = 1
     else:
-        result = fibonacci(n-1)+fibonacci(n-2) 
+        result = fibonacci(n-1)+fibonacci(n-2)
     return result
-print(f'commencing fibonacci sequence: {fibonacci(n)}')
+print(f'basic function. calculating fibonacci number for n of {n}: {fibonacci(n)}')
+print('total number of calls: ', call_count)
 
+call_count_memo = 0
+results_table = {}
 def fibonacci_memo(n):
-    print('function called ',' times: calculating fibonacci_memo(',n,')')
+    global call_count_memo
+    call_count_memo += 1
+    #print('function called',call_count,'times: calculating fibonacci_memo(',n,')')
     if n == 0:
         result = 0
-    if n == 1 or n == 2:
+    elif n == 1 or n == 2:
         result = 1
     else:
         if n in results_table:
@@ -32,6 +38,39 @@ def fibonacci_memo(n):
         else:
             result = fibonacci_memo(n-1)+fibonacci_memo(n-2) 
             results_table[n] = result
-        print('results table:' ,results_table)
     return result
-print(f'commencing memoised fibonacci function: {fibonacci_memo(n)}')
+print(f'\nmemoised function. calculating  fibonacci number for n of {n}: {fibonacci_memo(n)}')
+print('total number of calls: ', call_count_memo)
+
+call_count_bottom = 0
+def fib_bottom_up(n):
+    global call_count_bottom
+    call_count_bottom += 1
+    array = []
+    for i in range(n+1):
+        if i == 0:
+            result = 0
+        elif i == 1:
+            result = 1
+        else:
+            result = array[i-1] + array[i-2]
+        array.append(result)
+        #print('iteration',i,'complete. array:',array)
+    return result
+print(f'\nbottom-up function. calculating fibonacci number for n of {n}: {fib_bottom_up(n)}')
+print('total number of calls: ', call_count_bottom)
+
+def bottom_fib_2_variables(n):
+    x,y = 0,0
+    for i in range(n+1):
+        if i == 0:
+            result = 0
+        if i == 1:
+            result = 1
+        else:
+            result = x + y
+        x = y
+        y = result
+    return result
+print(f'\nmore efficient bottom-up function. calculating fibonacci number for n of {n}: {bottom_fib_2_variables(n)}')
+print('total number of calls: ', 1)
