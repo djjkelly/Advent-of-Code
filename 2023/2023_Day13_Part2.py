@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/13
 
-with open("2023/2023_Day13_test1_input.txt") as file_object:
+with open("2023/2023_Day13_input.txt") as file_object:
     file_content = file_object.readlines()
 
 sections = []
@@ -23,26 +23,33 @@ def check_candidates(section,candidate):
     i1 = candidate
     i2 = len(section) - candidate
     iterations = min(i1,i2)
-    print('evaluating candidate:',candidate,'. iterations:',iterations)
-    candidate_viable = []
+    print('evaluating candidate line:',candidate,'. iterations:',iterations)
+    section_diff = 0
     for i in range(iterations):
-        if section[candidate - i - 1] == section[candidate + i] and i > 0:
-            candidate_viable.append(True)
-        else:
-            candidate_viable.append(False)
-    if all(candidate_viable):
+        line_diff = 0
+        line_1 = candidate - i - 1 # this counts in natural numbers - the line is the last unreflected row
+        line_2 = candidate + i # this sets line_2 to start at the line below the line_1
+        for j in range(len(section[0])):
+            if section[line_1][j] != section[line_2][j]:
+                line_diff += 1
+        print('line_diff',line_diff)
+        section_diff += line_diff
+    print('section_diff',section_diff)
+    if section_diff == 1:
         return candidate
+    else:
+        return 0
 
 def find_mirror(section):
-    for index in range(1,len(section)+1):
-        horizontal_answer = check_candidates(section,index)
+    for candidate in range(1,len(section)):
+        horizontal_answer = check_candidates(section,candidate)
         if horizontal_answer:
             section_total = horizontal_answer * 100
             print('horizontal mirror found with',horizontal_answer,'columns above.')
             return section_total
     transposed_section = [''.join(row[i] for row in section) for i in range(len(section[0]))]
-    for index in range(1,len(transposed_section)+1):
-        section_total = check_candidates(section,index)
+    for candidate in range(1,len(transposed_section)):
+        section_total = check_candidates(transposed_section,candidate)
         if section_total:
             print('vertical mirror found with',section_total,'rows to the left.')
             return section_total
@@ -55,8 +62,9 @@ for i,section in enumerate(sections):
     print('section_total added:',section_total,'. current grand_total:',grand_total)
 print('Grand total:',grand_total)
 '''
+Correct answer obtained = 25401
+
 test1_input should give a grand total of 400 (300 + 100)
-test2_input should give a grand total of 
 
 (29846 was the right answer to part1)
 '''
