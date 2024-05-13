@@ -82,21 +82,26 @@ while True:
 print(minimum_heat_loss_estimates[-1][-1])
 
 # follow path back to start point
-best_path = [[input_list[j][i] for j in range(horizontal_length)] for i in range(vertical_length)]
-v,h = (vertical_length-1,horizontal_length-1)
+best_path = [list(row) for row in input_list]  # Start with the numbers from the input list
+v, h = vertical_length - 1, horizontal_length - 1
 symbols = {
-    'down':'v',
-    'right':'>',
-    'up':'^',
-    'left':'<'
+    'down': 'v',
+    'right': '>',
+    'up': '^',
+    'left': '<'
 }
-while v > 0 or h > 0:
-    best_path[v][h] = symbols[direction]
-    direction = previous_directions[v][h]
-    dv,dh = directions[direction]
-    new_v,new_h = v - dv, h - dh
-    v,h = new_v,new_h
 
+while v > 0 or h > 0:
+    direction = previous_directions[v][h]
+    best_path[v][h] = symbols[direction]
+    dv, dh = directions[direction]
+    v, h = v - dv, h - dh
+
+best_path[0][0] = 'S'  # Start
+best_path[vertical_length - 1][horizontal_length - 1] = 'E'  # End
+
+for line in best_path:
+    print(''.join(line))
 
 '''
 testinput should give a heat loss of: 102
