@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/18
 
-with open("2023/2023_Day18_testinput.txt",'r') as file_object:
+with open("2023/2023_Day18_input.txt",'r') as file_object:
     file_content = file_object.readlines()
 down,right = 0,0 #starting position
 digger_nodes = []
@@ -48,12 +48,12 @@ for down in range(down_length+1):
     digger_map.append([])
     for right in range(right_length+1):
         digger_map[down].append('-')
-    print(digger_map[down])
+    #print(digger_map[down])
 
 # excavate lines between nodes:
-down,right = 0,0
+down,right = 0-down_min,0-right_min
 for node in digger_nodes:
-    new_down,new_right = node[0],node[1]
+    new_down,new_right = node[0] - down_min, node[1] - right_min
     move_down,move_right = new_down - down, new_right - right
     #print('node:',node, 'move_down:' ,move_down,'move_right',move_right)
     if move_down == 0:
@@ -129,5 +129,7 @@ print(total_count)
 '''
 there should be 38 cubic metres of lava on the perimeter.
 after excavation, the testinput should give a total lava volume of: 62
+testinput correct.
+input correct too!
 
 '''
