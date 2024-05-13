@@ -61,20 +61,17 @@ for node in digger_nodes:
         for m in range(1,abs(move_right) + 1):
             if move_right < 0:
                 m = -m
-            #print('m =',m)
             digger_map[down][right + m] = '#'
     elif move_right == 0:
         #print('Moving down or up: move_down:',move_down)
         for m in range(1,abs(move_down)+1):
             if move_down < 0:
                 m = -m
-            #print('down:',down,'m =',m)
             digger_map[down + m][right] = '#'
     down,right = new_down,new_right
 perimeter_count = 0
 for line in digger_map:
     perimeter_count += line.count('#')
-    #print(line)
 print('perimeter count:', perimeter_count)
 
 digger_map.insert(0,['-']*len(digger_map[0]))
@@ -83,9 +80,6 @@ for line_number,line in enumerate(digger_map):
     line.insert(0,'-')
     line.append('-')
     digger_map[line_number] = line
-
-for line in digger_map:
-    '''print(line)'''
 
 def search_and_replace(line_number, char_number ,list_of_lists):
     new_coordinates_to_check = []
@@ -130,6 +124,6 @@ print(total_count)
 there should be 38 cubic metres of lava on the perimeter.
 after excavation, the testinput should give a total lava volume of: 62
 testinput correct.
-input correct too!
+input correct too! Answer is 46359
 
 '''
