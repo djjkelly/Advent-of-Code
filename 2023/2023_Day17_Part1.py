@@ -27,24 +27,23 @@ directions = {
     'left':(0,-1)
 }
 
-def direction_permitted(new_vert, new_horiz, direction, previous_directions):
-    vert_move,horiz_move = directions[direction]
-    for i in [1,2,3]:
-        print('working backwards based on direction:\'',direction,'\'. i:', i)
-        if 0 > new_vert - (vert_move*i):
-            print('the instructions point outside the boundaries of the grid (up). Returning True')
+def direction_permitted(new_vert, new_horiz, direction, previous_directions, directions):
+    vert_move, horiz_move = directions[direction]
+    consecutive_count = 0
+
+    # Start from the node that leads to new_vert, new_horiz, and trace back
+    for i in range(1, 4):
+        check_vert = new_vert - vert_move * i
+        check_horiz = new_horiz - horiz_move * i
+        if not (0 <= check_vert < len(previous_directions) and 0 <= check_horiz < len(previous_directions[0])):
             return True
-        if 0 > new_horiz - (horiz_move*i):
-            print('the instructions point outside the boundaries of the grid (left). Returning True')
+        prev_direction = previous_directions[check_vert][check_horiz]
+        if prev_direction is None or prev_direction != direction:
             return True
-        if previous_directions[new_vert-(vert_move*i)][new_horiz-(horiz_move*i)] == []:
-            print('this points back to the starting point. Returning True')
-            return True
-        if direction != previous_directions[new_vert-(vert_move*i)][new_horiz-(horiz_move*i)]:
-            print('Change of direction in history. Returning True')
-            return True
-    print('Three in a row discovered! Returning False')
-    return False
+        consecutive_count += 1
+        if consecutive_count == 3:
+            return False
+    return True
 
 vert_coord,horiz_coord = 0,0
 while True:
@@ -61,7 +60,7 @@ while True:
         if 0 <= new_vert < vertical_length and 0 <= new_horiz < horizontal_length and not explored_map[new_vert][new_horiz]:
             new_estimate = int(input_list[new_vert][new_horiz]) + current_heat_loss
             print(f'new estimate to consider for vert {new_vert} horiz {new_horiz} with direction {direction}: {new_estimate}')
-            if direction_permitted(new_vert,new_horiz,direction,previous_directions):
+            if direction_permitted(new_vert,new_horiz,direction,previous_directions,directions):
                 print(f'direction permitted!')
                 if new_estimate < minimum_heat_loss_estimates[new_vert][new_horiz]:
                     minimum_heat_loss_estimates[new_vert][new_horiz] = new_estimate
