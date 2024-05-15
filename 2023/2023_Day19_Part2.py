@@ -27,11 +27,15 @@ def process_action(action):
         next_workflow = action
     return part_accepted,next_workflow
 
-def process_workflow(current_path,current_workflow):
-    print(f'processing workflow with current_workflow {current_workflow})...')
-    global paths_to_explore
-    global paths_explored # probably redundant?
-    for rule in current_workflow:
+paths_to_explore = [{'path':['in'],'x': {'min':1,'max':4000}, 'm': {'min':1,'max':4000}, 'a': {'min':1,'max':4000}, 's': {'min':1,'max':4000}}]
+accepted_paths = []
+while paths_to_explore != []:
+    current_path = paths_to_explore[0]
+    paths_to_explore.pop(0)
+    current_workflow = workflows[current_path['path'][-1]]
+    print('current_path with ranges:',current_path)
+    for rule in current_workflow: # each rule splits the path in two (current_path and new_path)
+        new_path = current_path.copy()
         if ':' in rule:
             action = rule.split(':')[1]
             rule = rule.split(':')[0]
@@ -40,36 +44,43 @@ def process_workflow(current_path,current_workflow):
             number_to_check = int(rule[2:])
             print('category_to_consider:',category_to_consider,'conditional:',conditional,'number_to_check:',number_to_check, 'action:', action)
             if current_path[category_to_consider]['min'] < number_to_check < current_path[category_to_consider]['max']:
-                part_accepted,next_workflow = process_action(action)
                 if conditional == '<':
-                    if part_accepted is not None:
-                        return part_accepted,next_workflow
+                    if action == 'R':
+                        continue
+                    elif action == 'A':
+                        print('action is to accept: add path to acceptable paths')
                     else:
-                        paths_to_explore = next_workflow
+                        new_path['path'].append(action)
                     current_path[category_to_consider]['min'] = number_to_check
                 elif conditional == '>':
+                    if action == 'R':
+                        continue
+                    elif action == 'A':
+                        print('action is to accept: add path to acceptable paths')
+                    else:
+                        current_path['']
                     current_path[category_to_consider]['max'] = number_to_check
                 print('number within range: ',current_path['path'])
                 'modify path in line with conditional'
                 'add other path to paths_to_explore'
             else:
-                'follow the only action available for this range'
-                part_accepted,next_workflow = process_action(action)
-
+                'the range is not split - the full range continues...'
+                if action == 'R':
+                    'remove path from paths_to_explore'
+                elif action == 'A':
+                    'add acceptable paths total to grand total!'
+                else:
+                    'move to next workflow'
         else:
             action = rule
-            part_accepted,next_workflow = process_action(action)
-        return part_accepted,next_workflow
-
+            new_path['path'].append(action)
+            
 total = 0
-paths_to_explore = [{'path':['in'],'x': {'min':1,'max':4000}, 'm': {'min':1,'max':4000}, 'a': {'min':1,'max':4000}, 's': {'min':1,'max':4000}}]
-paths_explored = {} # probably redundant?
-while paths_to_explore != {}:
-    current_path = paths_to_explore[0]
-    current_workflow = workflows[current_path['path'][-1]]
-    print('current_path with ranges:',current_path)
-    part_accepted,current_workflow_name = process_workflow(current_path,current_workflow)
-
+for part in accepted_paths:
+    print(part)
+    for value in part.values():
+        print(value)
+        #total += int(value)
 print('total',total)
 
 '''
