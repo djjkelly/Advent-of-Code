@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/19
 
-with open("2023/2023_Day19_input.txt",'r') as file_object:
+with open("2023/2023_Day19_testinput.txt",'r') as file_object:
     file_content = file_object.readlines()
     before_line_break = True
     workflows = {}
-    part_ratings = []
     for line in file_content:
         if line == '\n':
             before_line_break = False
@@ -15,10 +14,6 @@ with open("2023/2023_Day19_input.txt",'r') as file_object:
             workflow_name = line.split('{')[0]
             rules = line.split('}')[0].split('{')[1].split(',')
             workflows[workflow_name] = rules
-        else:
-            split_ratings = line.split('}')[0].split(',')
-            line_ratings = {'x':split_ratings[0].split('=')[1],'m':split_ratings[1].split('=')[1],'a':split_ratings[2].split('=')[1],'s':split_ratings[3].split('=')[1]}
-            part_ratings.append(line_ratings)
 
 def process_action(action):
     print(f'processing action {action}...')
@@ -32,60 +27,50 @@ def process_action(action):
         next_workflow = action
     return part_accepted,next_workflow
 
-def process_workflow(part,current_workflow):
-    print(f'processing workflow (part {part} and current_workflow {current_workflow})...')
+def process_workflow(current_path,current_workflow):
+    print(f'processing workflow with current_workflow {current_workflow})...')
+    global paths_to_explore
+    global paths_explored # probably redundant?
     for rule in current_workflow:
         if ':' in rule:
             action = rule.split(':')[1]
             rule = rule.split(':')[0]
             category_to_consider = rule[0]
-            part_rating = int(part[category_to_consider])
             conditional = rule[1]
             number_to_check = int(rule[2:])
             print('category_to_consider:',category_to_consider,'conditional:',conditional,'number_to_check:',number_to_check, 'action:', action)
-            if conditional == '<':
-                if part_rating < number_to_check:
-                    part_accepted,next_workflow = process_action(action)
-                    return part_accepted,next_workflow
-                else:
-                    continue
-            elif conditional == '>':
-                if part_rating > number_to_check:
-                    part_accepted,next_workflow = process_action(action)
-                    return part_accepted,next_workflow
-                else:
-                    continue
+            if current_path[category_to_consider]['min'] < number_to_check < current_path[category_to_consider]['max']:
+                part_accepted,next_workflow = process_action(action)
+                if conditional == '<':
+                    if part_accepted is not None:
+                        return part_accepted,next_workflow
+                    else:
+                        paths_to_explore = next_workflow
+                    current_path[category_to_consider]['min'] = number_to_check
+                elif conditional == '>':
+                    current_path[category_to_consider]['max'] = number_to_check
+                print('number within range: ',current_path['path'])
+                'modify path in line with conditional'
+                'add other path to paths_to_explore'
+            else:
+                'follow the only action available for this range'
+                part_accepted,next_workflow = process_action(action)
+
         else:
             action = rule
             part_accepted,next_workflow = process_action(action)
         return part_accepted,next_workflow
 
-accepted_parts = []
-for part in part_ratings:
-    print(f'new part! {part}')
-    current_workflow_name = 'in'
-    part_accepted = None
-    #current_workflow = workflow_name[current_workflow_name]
-    while part_accepted is None:
-        print('running while loop...')
-        current_workflow = workflows[current_workflow_name]
-        print(process_workflow(part,current_workflow))
-        part_accepted,current_workflow_name = process_workflow(part,current_workflow)
-        if part_accepted is True:
-            accepted_parts.append(part)
-            print('TRUE! Appending part to list of accepted parts')
-            break
-        elif part_accepted is False:
-            print('FALSE!')
-            break
+total = 0
+paths_to_explore = [{'path':['in'],'x': {'min':1,'max':4000}, 'm': {'min':1,'max':4000}, 'a': {'min':1,'max':4000}, 's': {'min':1,'max':4000}}]
+paths_explored = {} # probably redundant?
+while paths_to_explore != {}:
+    current_path = paths_to_explore[0]
+    current_workflow = workflows[current_path['path'][-1]]
+    print('current_path with ranges:',current_path)
+    part_accepted,current_workflow_name = process_workflow(current_path,current_workflow)
 
-'''total = 0
-for part in accepted_parts:
-    print(part)
-    for value in part.values():
-        print(value)
-        total += int(value)
-print('total',total)'''
+print('total',total)
 
 '''
 testinput: total ratings = 19114
@@ -99,7 +84,7 @@ At each conditional, we branch the path off into two directions.
 For each path you would have a minimum and maximum acceptable value (a range).
 If we hit an R that path dies.
 If we hit an A, then the number of combinations represented by our ranges gets added to the number of acceptable combinations.
-Once added, the A path can be removed from the list.
+Once added, the A path can be removed from the paths_to_explore.
 The number of combinations represented can be expressed as a multiple (max1-min1 * max2-min2 * max3-min3 * max4-min4)
 
 I want to structure this as something like a dict of dicts:
@@ -107,7 +92,7 @@ I want to structure this as something like a dict of dicts:
 Every time the path splits, one path is explored an another is stored for later.
 
 Maybe another level of abstraction can be added:
-{{'path': ['in']}:{'x': {'min':'1','max':'4000'}, 'm': {'min':'1','max':'4000'}, 'a': {'min':'1','max':'4000'}, 's': {'min':'1','max':'4000'}}}
+[{'path': ['in']}:{'x': {'min':'1','max':'4000'}, 'm': {'min':'1','max':'4000'}, 'a': {'min':'1','max':'4000'}, 's': {'min':'1','max':'4000'}}]
 
 An alternative approach could be to find all As and work backwards from there?
 '''
