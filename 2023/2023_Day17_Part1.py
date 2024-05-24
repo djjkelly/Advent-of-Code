@@ -30,13 +30,13 @@ directions = {
 def is_in_bounds(v,h):
     return 0 <= v < vertical_length and 0 <= h < horizontal_length
 
-def direction_permitted(direction, directions_to_check):
+def is_direction_permitted(direction, directions_to_check):
     print('checking direction' ,direction, 'against directions_to_check: ',directions_to_check)
     for d in directions_to_check:
         if d != direction:
-            print('direction_permitted function returns True!')
+            print('is_direction_permitted function returns True!')
             return True
-    print('direction_permitted function returns False!')
+    print('is_direction_permitted function returns False!')
     return False
 
 queue = [(0,0,0)]
@@ -54,7 +54,7 @@ while queue:
             new_estimate = int(input_list[new_v][new_h]) + current_heat_loss
             print(f'new estimate to consider for vert {new_v} horiz {new_h} with direction {direction}: new estimate = {new_estimate}')
             directions_to_check = previous_directions[v][h]
-            if direction_permitted(direction, directions_to_check):
+            if is_direction_permitted(direction, directions_to_check):
                 if new_estimate < minimum_heat_loss_estimates[new_v][new_h]:
                     minimum_heat_loss_estimates[new_v][new_h] = new_estimate
                     print(f'updating previous directions at new_v,new_h!: {previous_directions[v][h][1:]},{direction}')
@@ -64,7 +64,7 @@ while queue:
 print(minimum_heat_loss_estimates[-1][-1])
 
 # follow path back to start point
-best_path = [list(row) for row in input_list]  # Start with the numbers from the input list
+best_path = [list(row) for row in input_list]
 v, h = vertical_length - 1, horizontal_length - 1
 symbols = {
     'down': 'v',
