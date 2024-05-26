@@ -58,59 +58,73 @@ directions = {
     'left':(0,-1)
 }
 
-number_of_steps = 64 # should be 26501365
-step_count = 0
-squares_to_evaluate = [((start_line,start_char),'even')]
-squares_evaluated = [((start_line,start_char),'even')]
-for step_count in range(number_of_steps):
-    current_squares_to_evaluate = copy.deepcopy(squares_to_evaluate)
-    squares_to_evaluate = []
-    while current_squares_to_evaluate:
-        #print('\nNEW STEP! Current squares to evaluate:\n',current_squares_to_evaluate)
-        current_square = current_squares_to_evaluate.pop(0)
-        current_coordinates = current_square[0]
-        current_status = current_square[1]
-        for directions_item in directions.items():
-            direction,move = directions_item[0],directions_item[1]
-            #print('direction:', direction, ', move:', move)
-            new_coordinates = tuple(x+y for x,y in zip(current_coordinates,move))
-            #print('current_coordinates:',current_coordinates,' new_coordinates:',new_coordinates)
-            if not is_in_bounds(new_coordinates):
-                #print('out of bounds!')
-                continue
-            if input_list[new_coordinates[0]][new_coordinates[1]] == '#':
-                #print('hashtag found in direction',direction,'ignoring this square')
-                continue
-            if current_status == 'odd':
-                new_status = 'even'
-            elif current_status == 'even':
-                new_status = 'odd'
-            #print('current_status:',current_status,'new_status:',new_status)
-            if ((new_coordinates),new_status) not in squares_evaluated:
-                squares_to_evaluate.append(((new_coordinates),new_status))
-                squares_evaluated.append(((new_coordinates),new_status))
-    #print('step finished!')
-print('finished!')
-criteria = ['odd','even']
-even_plots_per_filled_copy = 0
-odd_plots_per_filled_copy = 0
-for square_evaluated in squares_evaluated:
-    if square_evaluated[1] == 'even':
-        even_plots_per_filled_copy += 1
-    else:
-        odd_plots_per_filled_copy += 1
+number_of_steps = 26501365 # as per problem statement
+copy_count = int((number_of_steps - start_char)/(horizontal_length + 1)) # this is the number of copies
+print('copy_count:',copy_count)
+steps_to_fill = 132 # this will always be enough steps to fill a grid (height//2 + width//2 + 2).
+def fill_copy(start_line,start_char,even_or_odd,steps_to_fill):
+    squares_to_evaluate = [((start_line,start_char),even_or_odd)]
+    squares_evaluated = [((start_line,start_char),even_or_odd)]
+    for step_count in range(steps_to_fill):
+        current_squares_to_evaluate = copy.deepcopy(squares_to_evaluate)
+        squares_to_evaluate = []
+        while current_squares_to_evaluate:
+            #print('\nNEW STEP! Current squares to evaluate:\n',current_squares_to_evaluate)
+            current_square = current_squares_to_evaluate.pop(0)
+            current_coordinates = current_square[0]
+            current_status = current_square[1]
+            for directions_item in directions.items():
+                direction,move = directions_item[0],directions_item[1]
+                #print('direction:', direction, ', move:', move)
+                new_coordinates = tuple(x+y for x,y in zip(current_coordinates,move))
+                #print('current_coordinates:',current_coordinates,' new_coordinates:',new_coordinates)
+                if not is_in_bounds(new_coordinates):
+                    #print('out of bounds!')
+                    continue
+                if input_list[new_coordinates[0]][new_coordinates[1]] == '#':
+                    #print('hashtag found in direction',direction,'ignoring this square')
+                    continue
+                if current_status == 'odd':
+                    new_status = 'even'
+                elif current_status == 'even':
+                    new_status = 'odd'
+                #print('current_status:',current_status,'new_status:',new_status)
+                if ((new_coordinates),new_status) not in squares_evaluated:
+                    squares_to_evaluate.append(((new_coordinates),new_status))
+                    squares_evaluated.append(((new_coordinates),new_status))
+        #print('step finished!')
+    print('finished!')
+    criteria = ['odd','even']
+    even_plots_per_filled_copy = 0
+    odd_plots_per_filled_copy = 0
+    for square_evaluated in squares_evaluated:
+        if square_evaluated[1] == 'even':
+            even_plots_per_filled_copy += 1
+        else:
+            odd_plots_per_filled_copy += 1
+    return even_plots_per_filled_copy,odd_plots_per_filled_copy
+
+# this part calculates the total reachable plots for copies which are completely filled in
+even_plots_per_filled_copy,odd_plots_per_filled_copy = fill_copy(start_line,start_char,'even',steps_to_fill)
 print('even per-copy:',even_plots_per_filled_copy,'odd per-copy:',odd_plots_per_filled_copy)
-filled_copy_steps = even_plots_per_filled_copy*(number_of_steps*(number_of_steps-1)+1) + odd_plots_per_filled_copy*number_of_steps*(number_of_steps-1)
+filled_copy_steps = even_plots_per_filled_copy*(copy_count*(copy_count-1)+1) + odd_plots_per_filled_copy*copy_count*(copy_count-1)
 print('filled_copy_steps:',filled_copy_steps)
+
+# this part calculates the partially filled copies at the farthest right, left, up, down points
+right_point, unused_variable = fill_copy(65,0,'even',131) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
+left_point, unused_variable = fill_copy(65,130,'even',131)
+top_point, unused_variable = fill_copy(0,65,'even',131)
+bottom_point, unused_variable = fill_copy(130,65,'even',131)
+
+print('right_point:',right_point,'left_point:',left_point,'top_point:',top_point,'bottom_point:',bottom_point)
+
+total = filled_copy_steps + right_point + left_point + top_point + bottom_point
+print('grand total:',total)
+
+# I now need to consider the perimeter of the partially filled copies surrounding the diamond-shape of filled copies.
+
 '''
 real input takes a number_of_steps of 26501365
-
----------------------------------------------------------------
-testinput with 6 steps should give an answer of 16
-testinput with 10 steps should give an answer of 50
-testinput with 50 steps should give an answer of 1594
-testinput with 100 steps should give an answer of 6536
-testinput with 500 steps should give an answer of 167004
-testinput with 1000 steps should give an answer of 668697
-testinput with 5000 steps should give an answer of 16733044
+I need to double check whether the top, bottom, left and right are really even.
+I think this makes sense as the middle (0) is even (excluded from copy count) and the 202300 is even too.
 '''
