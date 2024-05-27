@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/21
 
-import copy
-
 with open("2023/2023_Day21_input.txt",'r') as file_object:
     file_content = file_object.readlines()
 
@@ -63,48 +61,39 @@ copy_count = int((number_of_steps - start_char)/(horizontal_length + 1)) # this 
 print('copy_count:',copy_count)
 steps_to_fully_fill = 132 # this will always be enough steps to fill a grid from the midpoint (= height//2 + width//2 + 2).
 
-def fill_copy(start_line,start_char,even_or_odd,steps):
-    squares_to_evaluate = [((start_line,start_char),even_or_odd)]
-    squares_evaluated = [((start_line,start_char),even_or_odd)]
+def fill_copy(start_line, start_char, even_or_odd, steps):
+    squares_to_evaluate = { (start_line, start_char): even_or_odd }
+    squares_evaluated = {}  # Use a dictionary to track all evaluated coordinates and their statuses
     for step_count in range(steps):
-        current_squares_to_evaluate = copy.deepcopy(squares_to_evaluate)
-        squares_to_evaluate = []
-        while current_squares_to_evaluate:
-            #print('\nNEW STEP! Current squares to evaluate:',current_squares_to_evaluate)
-            current_square = current_squares_to_evaluate.pop(0)
-            current_coordinates = current_square[0]
-            current_status = current_square[1]
-            for directions_item in directions.items():
-                direction,move = directions_item[0],directions_item[1]
+        current_squares_to_evaluate = squares_to_evaluate.copy()
+        squares_to_evaluate = {}
+        for current_coordinates, current_status in current_squares_to_evaluate.items():
+            for direction, move in directions.items():
+                new_coordinates = (current_coordinates[0] + move[0], current_coordinates[1] + move[1])
                 #print('direction:', direction, ', move:', move)
-                new_coordinates = tuple(x+y for x,y in zip(current_coordinates,move))
-                #print('current_coordinates:',current_coordinates,' new_coordinates:',new_coordinates)
-                if not is_in_bounds(new_coordinates):
-                    #print('out of bounds!')
-                    continue
-                if input_list[new_coordinates[0]][new_coordinates[1]] == '#':
-                    #print('hashtag found in direction',direction,'ignoring this square')
-                    continue
-                if current_status == 'odd':
-                    new_status = 'even'
-                elif current_status == 'even':
-                    new_status = 'odd'
-                #print('current_status:',current_status,'new_status:',new_status)
-                if ((new_coordinates),new_status) not in squares_evaluated:
-                    squares_to_evaluate.append(((new_coordinates),new_status))
-                    squares_evaluated.append(((new_coordinates),new_status))
+                #print('current_coordinates:', current_coordinates, ' new_coordinates:', new_coordinates)
+                if is_in_bounds(new_coordinates) and input_list[new_coordinates[0]][new_coordinates[1]] != '#':
+                    if current_status == 'odd':
+                        new_status = 'even'
+                    elif current_status == 'even':
+                        new_status = 'odd'
+                    #print('current_status:', current_status, 'new_status:', new_status)
+                    if new_coordinates not in squares_evaluated:
+                        squares_to_evaluate[new_coordinates] = new_status
+                        squares_evaluated[new_coordinates] = new_status
+                        #print('Adding new coordinate to evaluate:', new_coordinates, 'with status:', new_status)
         #print('step finished!')
     print('fill_copy function finished!')
     even_plots_per_filled_copy = 0
     odd_plots_per_filled_copy = 0
-    for square_evaluated in squares_evaluated:
-        if square_evaluated[1] == 'even':
+    for coordinates, status in squares_evaluated.items():
+        if status == 'even':
             even_plots_per_filled_copy += 1
         else:
             odd_plots_per_filled_copy += 1
-    return even_plots_per_filled_copy,odd_plots_per_filled_copy
+    return even_plots_per_filled_copy, odd_plots_per_filled_copy
 
-test_even,test_odd = fill_copy(65,65,'even',64)
+test_even,test_odd = fill_copy(65,65,'even',64) # why is the answer for 64 the same as 65? Is this because of the blank row around the edge?
 print('should be 3699. test_even:',test_even) # should still be 3699 - and it is!
 
 # this part calculates the total reachable plots for copies which are completely filled in
@@ -114,23 +103,20 @@ filled_copies_total = even_plots_per_filled_copy*((copy_count-1)**2) + odd_plots
 print('filled_copies_total:',filled_copies_total)
 
 # this part calculates the partially filled copies at the farthest right, left, up, down points
-right_point, unused_variable = fill_copy(65,0,'even',131) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
-left_point, unused_variable = fill_copy(65,130,'even',131)
-top_point, unused_variable = fill_copy(0,65,'even',131)
-bottom_point, unused_variable = fill_copy(130,65,'even',131)
+right_point, unused_variable = fill_copy(65,0,'even',130) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
+left_point, unused_variable = fill_copy(65,130,'even',130)
+top_point, unused_variable = fill_copy(0,65,'even',130)
+bottom_point, unused_variable = fill_copy(130,65,'even',130) # using 130 and 131 as the step number give the exact same result (?)
 
 print('right_point:',right_point,'left_point:',left_point,'top_point:',top_point,'bottom_point:',bottom_point)
-
 total = filled_copies_total + right_point + left_point + top_point + bottom_point
 print('intermediate total:',total)
 
-'''I now need to consider the perimeter of the partially filled copies surrounding the diamond-shape of filled copies.
-The perimeter of the diamond shape is 4 x copy_count
-'''
-top_right_even_edge, unused_variable = fill_copy(130,0,'even',196)
-unused_variable, top_right_odd_edge = fill_copy(130,0,'odd',65)
-top_left_even_edge, unused_variable = fill_copy(130,130,'even',196) # modified so that starting value is valid
-unused_variable,top_left_odd_edge = fill_copy(130,130,'odd',65) # modified so that starting value is valid
+# calculation for odd and even copies on the diagonals:
+top_right_even_edge, unused_variable = fill_copy(130,0,'even',196) # 196 and 195 give different answers
+unused_variable, top_right_odd_edge = fill_copy(130,0,'odd',65) # 64 and 65 give the same answers
+top_left_even_edge, unused_variable = fill_copy(130,130,'even',196)
+unused_variable,top_left_odd_edge = fill_copy(130,130,'odd',65)
 bottom_right_even_edge, unused_variable = fill_copy(0,0,'even',196)
 unused_variable, bottom_right_odd_edge = fill_copy(0,0,'odd',65)
 bottom_left_even_edge, unused_variable = fill_copy(0,130,'even',196)
@@ -142,7 +128,7 @@ even_diagonals = (top_right_even_edge + top_left_even_edge + bottom_right_even_e
 odd_diagonals = (top_right_odd_edge + top_left_odd_edge + bottom_right_odd_edge + bottom_left_odd_edge) * (copy_count)
 total += (even_diagonals + odd_diagonals)
 print('grand total:',total)
-if total == 602668853020498 or total == 602668880128698 or total == 613391353042289 or total == 613391300444549 or total == 613388299113968 or total == 613391342118089:
+if total == 602668853020498 or total == 602668880128698 or total == 613391353042289 or total == 613391300444549 or total == 613388299113968 or total == 613391342118089 or total == 613391289520349:
     print('answer incorrect - already submitted')
 if total <= 602668880128698:
     print('answer incorrect - too low!')
@@ -160,4 +146,5 @@ I think this makes sense as the middle (0) is even (excluded from copy count) an
 613391300444549 incorrect
 613388299113968 incorrect
 613391342118089 incorrect
+613391289520349 incorrect
 '''
