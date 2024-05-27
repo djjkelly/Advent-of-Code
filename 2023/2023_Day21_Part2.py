@@ -94,7 +94,6 @@ def fill_copy(start_line,start_char,even_or_odd,steps_to_fill):
                     squares_evaluated.append(((new_coordinates),new_status))
         #print('step finished!')
     print('finished!')
-    criteria = ['odd','even']
     even_plots_per_filled_copy = 0
     odd_plots_per_filled_copy = 0
     for square_evaluated in squares_evaluated:
@@ -119,12 +118,33 @@ bottom_point, unused_variable = fill_copy(130,65,'even',131)
 print('right_point:',right_point,'left_point:',left_point,'top_point:',top_point,'bottom_point:',bottom_point)
 
 total = filled_copy_steps + right_point + left_point + top_point + bottom_point
-print('grand total:',total)
+print('intermediate total:',total)
 
-# I now need to consider the perimeter of the partially filled copies surrounding the diamond-shape of filled copies.
+'''I now need to consider the perimeter of the partially filled copies surrounding the diamond-shape of filled copies.
+The perimeter of the diamond shape is 4 x copy_count
+'''
+top_right_even_edge, unused_variable = fill_copy(130,0,'even',196)
+unused_variable, top_right_odd_edge = fill_copy(130,0,'odd',65)
+top_left_even_edge, unused_variable = fill_copy(130,129,'even',196) # modified so that starting value is valid
+unused_variable,top_left_odd_edge = fill_copy(129,130,'odd',65) # modified so that starting value is valid
+bottom_right_even_edge, unused_variable = fill_copy(0,0,'even',196)
+unused_variable, bottom_right_odd_edge = fill_copy(0,0,'odd',65)
+bottom_left_even_edge, unused_variable = fill_copy(0,130,'even',196)
+unused_variable, bottom_left_odd_edge = fill_copy(0,130,'odd',65)
+print(f'top_right_even_edge:{top_right_even_edge},top_right_odd_edge:{top_right_odd_edge},  top_left_even_edge: {top_left_even_edge}, top_left_odd_edge: {top_left_odd_edge}')
+print(f'bottom_right_even_edge: {bottom_right_even_edge} bottom_right_odd_edge: {bottom_right_odd_edge} bottom_left_even_edge: {bottom_left_even_edge} bottom_left_odd_edge: {bottom_left_odd_edge}')
+
+even_diagonals = (top_right_even_edge+top_left_even_edge+bottom_right_even_edge+bottom_left_even_edge) * (copy_count - 1)
+odd_diagonals = (top_right_odd_edge+top_left_odd_edge+bottom_right_odd_edge+bottom_left_odd_edge) * copy_count
+total += (even_diagonals + odd_diagonals)
+print('grand total:',total)
 
 '''
 real input takes a number_of_steps of 26501365
 I need to double check whether the top, bottom, left and right are really even.
 I think this makes sense as the middle (0) is even (excluded from copy count) and the 202300 is even too.
+
+602668853020498 incorrect - answer too low
+602668880128698 incorrect - answer too low
+
 '''
