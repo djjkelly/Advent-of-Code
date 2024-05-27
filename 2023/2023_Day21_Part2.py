@@ -49,7 +49,7 @@ The number of copies not located on the perimeter is expressed by n(n-1) odd cop
 '''
 def is_in_bounds(new_coordinates):
     v,h = new_coordinates
-    return 0 <= v < vertical_length and 0 <= h < horizontal_length
+    return 0 <= v <= vertical_length and 0 <= h <= horizontal_length
 
 directions = {
     'down':(1,0),
@@ -61,15 +61,16 @@ directions = {
 number_of_steps = 26501365 # as per problem statement
 copy_count = int((number_of_steps - start_char)/(horizontal_length + 1)) # this is the number of copies
 print('copy_count:',copy_count)
-steps_to_fill = 132 # this will always be enough steps to fill a grid (height//2 + width//2 + 2).
-def fill_copy(start_line,start_char,even_or_odd,steps_to_fill):
+steps_to_fully_fill = 132 # this will always be enough steps to fill a grid from the midpoint (= height//2 + width//2 + 2).
+
+def fill_copy(start_line,start_char,even_or_odd,steps):
     squares_to_evaluate = [((start_line,start_char),even_or_odd)]
     squares_evaluated = [((start_line,start_char),even_or_odd)]
-    for step_count in range(steps_to_fill):
+    for step_count in range(steps):
         current_squares_to_evaluate = copy.deepcopy(squares_to_evaluate)
         squares_to_evaluate = []
         while current_squares_to_evaluate:
-            #print('\nNEW STEP! Current squares to evaluate:\n',current_squares_to_evaluate)
+            #print('\nNEW STEP! Current squares to evaluate:',current_squares_to_evaluate)
             current_square = current_squares_to_evaluate.pop(0)
             current_coordinates = current_square[0]
             current_status = current_square[1]
@@ -93,7 +94,7 @@ def fill_copy(start_line,start_char,even_or_odd,steps_to_fill):
                     squares_to_evaluate.append(((new_coordinates),new_status))
                     squares_evaluated.append(((new_coordinates),new_status))
         #print('step finished!')
-    print('finished!')
+    print('fill_copy function finished!')
     even_plots_per_filled_copy = 0
     odd_plots_per_filled_copy = 0
     for square_evaluated in squares_evaluated:
@@ -103,11 +104,14 @@ def fill_copy(start_line,start_char,even_or_odd,steps_to_fill):
             odd_plots_per_filled_copy += 1
     return even_plots_per_filled_copy,odd_plots_per_filled_copy
 
+test_even,test_odd = fill_copy(65,65,'even',64)
+print('should be 3699. test_even:',test_even) # should still be 3699 - and it is!
+
 # this part calculates the total reachable plots for copies which are completely filled in
-even_plots_per_filled_copy,odd_plots_per_filled_copy = fill_copy(start_line,start_char,'even',steps_to_fill)
+even_plots_per_filled_copy,odd_plots_per_filled_copy = fill_copy(start_line,start_char,'even',steps_to_fully_fill)
 print('even per-copy:',even_plots_per_filled_copy,'odd per-copy:',odd_plots_per_filled_copy)
-filled_copy_steps = even_plots_per_filled_copy*(copy_count*(copy_count-1)+1) + odd_plots_per_filled_copy*copy_count*(copy_count-1)
-print('filled_copy_steps:',filled_copy_steps)
+filled_copies_total = even_plots_per_filled_copy*((copy_count-1)**2) + odd_plots_per_filled_copy*(copy_count**2)
+print('filled_copies_total:',filled_copies_total)
 
 # this part calculates the partially filled copies at the farthest right, left, up, down points
 right_point, unused_variable = fill_copy(65,0,'even',131) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
@@ -117,7 +121,7 @@ bottom_point, unused_variable = fill_copy(130,65,'even',131)
 
 print('right_point:',right_point,'left_point:',left_point,'top_point:',top_point,'bottom_point:',bottom_point)
 
-total = filled_copy_steps + right_point + left_point + top_point + bottom_point
+total = filled_copies_total + right_point + left_point + top_point + bottom_point
 print('intermediate total:',total)
 
 '''I now need to consider the perimeter of the partially filled copies surrounding the diamond-shape of filled copies.
@@ -125,26 +129,35 @@ The perimeter of the diamond shape is 4 x copy_count
 '''
 top_right_even_edge, unused_variable = fill_copy(130,0,'even',196)
 unused_variable, top_right_odd_edge = fill_copy(130,0,'odd',65)
-top_left_even_edge, unused_variable = fill_copy(130,129,'even',196) # modified so that starting value is valid
-unused_variable,top_left_odd_edge = fill_copy(129,130,'odd',65) # modified so that starting value is valid
+top_left_even_edge, unused_variable = fill_copy(130,130,'even',196) # modified so that starting value is valid
+unused_variable,top_left_odd_edge = fill_copy(130,130,'odd',65) # modified so that starting value is valid
 bottom_right_even_edge, unused_variable = fill_copy(0,0,'even',196)
 unused_variable, bottom_right_odd_edge = fill_copy(0,0,'odd',65)
 bottom_left_even_edge, unused_variable = fill_copy(0,130,'even',196)
 unused_variable, bottom_left_odd_edge = fill_copy(0,130,'odd',65)
-print(f'top_right_even_edge:{top_right_even_edge},top_right_odd_edge:{top_right_odd_edge},  top_left_even_edge: {top_left_even_edge}, top_left_odd_edge: {top_left_odd_edge}')
-print(f'bottom_right_even_edge: {bottom_right_even_edge} bottom_right_odd_edge: {bottom_right_odd_edge} bottom_left_even_edge: {bottom_left_even_edge} bottom_left_odd_edge: {bottom_left_odd_edge}')
+print(f'top_right_even_edge: {top_right_even_edge},top_right_odd_edge: {top_right_odd_edge},  top_left_even_edge: {top_left_even_edge}, top_left_odd_edge: {top_left_odd_edge}')
+print(f'bottom_right_even_edge: {bottom_right_even_edge}, bottom_right_odd_edge: {bottom_right_odd_edge}, bottom_left_even_edge: {bottom_left_even_edge}, bottom_left_odd_edge: {bottom_left_odd_edge}')
 
-even_diagonals = (top_right_even_edge+top_left_even_edge+bottom_right_even_edge+bottom_left_even_edge) * (copy_count - 1)
-odd_diagonals = (top_right_odd_edge+top_left_odd_edge+bottom_right_odd_edge+bottom_left_odd_edge) * copy_count
+even_diagonals = (top_right_even_edge + top_left_even_edge + bottom_right_even_edge + bottom_left_even_edge) * (copy_count - 1)
+odd_diagonals = (top_right_odd_edge + top_left_odd_edge + bottom_right_odd_edge + bottom_left_odd_edge) * (copy_count)
 total += (even_diagonals + odd_diagonals)
 print('grand total:',total)
+if total == 602668853020498 or total == 602668880128698 or total == 613391353042289 or total == 613391300444549 or total == 613388299113968 or total == 613391342118089:
+    print('answer incorrect - already submitted')
+if total <= 602668880128698:
+    print('answer incorrect - too low!')
+if total >= 613391353042289:
+    print('answer incorrect - too high!')
 
 '''
 real input takes a number_of_steps of 26501365
 I need to double check whether the top, bottom, left and right are really even.
 I think this makes sense as the middle (0) is even (excluded from copy count) and the 202300 is even too.
 
-602668853020498 incorrect - answer too low
-602668880128698 incorrect - answer too low
-
+602668853020498 incorrect - answer too low!
+602668880128698 incorrect - answer too low!
+613391353042289 incorrect - answer too high!
+613391300444549 incorrect
+613388299113968 incorrect
+613391342118089 incorrect
 '''
