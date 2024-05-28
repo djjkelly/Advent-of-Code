@@ -1,42 +1,43 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/12
 
-with open("2023/2023_Day12_testinput.txt") as file_object:
+with open("2023/2023_Day12_input.txt") as file_object:
     file_content = file_object.readlines()
 
-def count_possibilities(condition_records,damaged_group_sizes):
+def count_possibilities(string,tuple):
     global call_depth
     call_depth += 1
-    current_character = condition_records[0]
-    current_group = damaged_group_sizes[0]
     # base case - no more condition records
-    if condition_records == '':
-        if damaged_group_sizes == ():
+    if string == '':
+        if tuple == ():
             call_depth -= 1
             return 1
         else:
             call_depth -= 1
             return 0
     # base case - not enough damaged group sizes
-    if damaged_group_sizes == ():
-        if '#' in condition_records:
+    if tuple == ():
+        if '#' in string:
             call_depth -= 1
             return 0 # remaining damaged parts cannot be accounted for in damaged_group_sizes
         else:
             call_depth -= 1
             return 1 # damaged groups and # characters exhausted - found a possibility
     result = 0
-    if condition_records[0] == '.' or condition_records[0] == '?': # this branch assumes '?' is a '.'... these branches will explore first
-        result += count_possibilities(condition_records[1:],damaged_group_sizes) # damaged group sizes remain unchanged - no damaged springs assigned
+    current_character = string[0]
+    current_group = tuple[0]
+    # this branch assumes '?' is a '.'... these branches will explore first
+    if current_character == '.' or current_character == '?':
+        result += count_possibilities(string[1:],tuple) # damaged group sizes remain unchanged - no damaged springs assigned
 
     # this branch assumes '?' is a '#'
-    if condition_records[0] == '#' or condition_records[0] == '?':
-        if damaged_group_sizes[0] <= len(condition_records): # no point evaluating if there aren't enough characters left
-            if '.' not in condition_records[:damaged_group_sizes[0]]: # looks along the length of the group size to check that all could be damaged.
-                if damaged_group_sizes[0] == len(condition_records):
-                    result += count_possibilities(condition_records[1:],damaged_group_sizes[1:])
-                elif condition_records[damaged_group_sizes[0] + 1] == '.':
-                    result += count_possibilities(condition_records[1:],damaged_group_sizes[1:])
+    if current_character == '#' or current_character == '?':
+        if tuple[0] <= len(string): # no point evaluating if there aren't enough characters left
+            if '.' not in string[:current_group]: # looks along the length of the group size to check that all could be damaged.
+                if tuple[0] == len(string):
+                    result += count_possibilities(string[current_group:],tuple[1:])
+                elif string[current_group] == '.' or string[current_group] == '?':
+                    result += count_possibilities(string[current_group+1:],tuple[1:])
     call_depth -= 1
     return result
 
