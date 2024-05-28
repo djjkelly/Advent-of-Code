@@ -34,10 +34,10 @@ def count_possibilities(string,tuple):
     if current_character == '#' or current_character == '?':
         if tuple[0] <= len(string): # no point evaluating if there aren't enough characters left
             if '.' not in string[:current_group]: # looks along the length of the group size to check that all could be damaged.
-                if tuple[0] == len(string):
+                if tuple[0] == len(string): # group ends at end of string
                     result += count_possibilities(string[current_group:],tuple[1:])
-                elif string[current_group] == '.' or string[current_group] == '?':
-                    result += count_possibilities(string[current_group+1:],tuple[1:])
+                elif string[current_group] == '.' or string[current_group] == '?': # group ends when interrupted by a '.'
+                    result += count_possibilities(string[current_group+1:],tuple[1:]) # the next char '.' or '?' should be skipped ('?' treated as '.') 
     call_depth -= 1
     return result
 
@@ -50,8 +50,8 @@ for line in file_content:
     for group in line.split()[1].split(','):
         damaged_group_sizes.append(int(group))
     damaged_group_sizes = tuple(damaged_group_sizes)
-    print(condition_records)
-    print(damaged_group_sizes)
+    #print(condition_records)
+    #print(damaged_group_sizes)
     line_total = count_possibilities(condition_records,damaged_group_sizes)
     print('line total:',line_total)
     total += line_total
