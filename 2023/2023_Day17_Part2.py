@@ -36,22 +36,17 @@ def min_heat_loss(input_list):
             # Continue moving in the same direction if direction is permitted
             nv, nh = v + ddv, h + ddh
             if (ddv,ddh) == (dv,dh):
-                if steps < 3:
+                if steps < 10:
                     if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                         new_estimate = current_estimate + input_list[nv][nh]
                         heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 1))
-                continue
             # Try different directions:
-            if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
+            elif 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                 new_estimate = current_estimate + input_list[nv][nh]
                 heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, 1))
 result = min_heat_loss(input_list)
 print(f"Minimum heat loss: {result}")
 
 '''
-testinput should give a heat loss of: 102
-Correct answer obtained for testinput = 102
 
-incorrect answer obtained: minimum_heat_loss of 849 - answer too high
-Correct answer is 845
 '''
