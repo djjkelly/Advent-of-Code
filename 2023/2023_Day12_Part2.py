@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/12
 
-with open("2023/2023_Day12_testinput.txt") as file_object:
+with open("2023/2023_Day12_input.txt") as file_object:
     file_content = file_object.readlines()
 
 def count_possibilities(string,tuple):
@@ -23,6 +23,8 @@ def count_possibilities(string,tuple):
         else:
             call_depth -= 1
             return 1 # damaged groups and # characters exhausted - found a possibility
+    if (string,tuple) in memo:
+        return memo[(string,tuple)]
     result = 0
     current_character = string[0]
     current_group = tuple[0]
@@ -39,9 +41,12 @@ def count_possibilities(string,tuple):
                 elif string[current_group] == '.' or string[current_group] == '?': # group ends when interrupted by a '.'
                     result += count_possibilities(string[current_group+1:],tuple[1:]) # the next char '.' or '?' should be skipped ('?' treated as '.') 
     call_depth -= 1
+    if (string,tuple) not in memo:
+        memo[(string,tuple)] = result
     return result
 
 total = 0
+memo = {}
 for line_no,line in enumerate(file_content):
     call_depth = 0
     line = line.strip()
@@ -55,11 +60,12 @@ for line_no,line in enumerate(file_content):
     #print(condition_records)
     #print(damaged_group_sizes)
     line_total = count_possibilities(condition_records,damaged_group_sizes)
-    print(f'line number {line_no}. line total: {line_total}')
+    print(f'line number {line_no+1}. line total: {line_total}')
     total += line_total
 print('total:',total)
 
 '''
-Part2 testinput should give a result of 525152
-Correct answer obtained for testinput, but answer very slow for real input.
+Correct answer obtained - 1909291258644
+
+Part2 testinput gives a result of 525152
 '''
