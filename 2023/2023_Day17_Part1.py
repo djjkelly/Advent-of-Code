@@ -18,11 +18,11 @@ def min_heat_loss(input_list):
     
     queue = []
     minimum_heat_loss_estimates = {}
-    heapq.heappush(queue, (0, 0, 0, 1, 1,  0))  # Start by moving right
-    heapq.heappush(queue, (0, 0, 1, 0, 1,  0))   # Start by moving down
-#                          v  h dv  dh st mhl
+    heapq.heappush(queue, (0, 0, 0, 0, 1, 1))  # Start by moving right
+    heapq.heappush(queue, (0, 0, 0, 1, 0, 1))   # Start by moving down
+#                         mhl v  h dv  dh st
     while queue:
-        v, h, dv, dh, steps, current_estimate = heapq.heappop(queue)
+        current_estimate, v, h, dv, dh, steps  = heapq.heappop(queue)
         if (v, h) == (vertical_length-1, horizontal_length-1):
             return current_estimate
         # Avoid revisiting unless current_loss is better
@@ -39,12 +39,12 @@ def min_heat_loss(input_list):
                 if steps < 3:
                     if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                         new_estimate = current_estimate + input_list[nv][nh]
-                        heapq.heappush(queue, (nv, nh, ddv, ddh, steps + 1, new_estimate))
+                        heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 1))
                 continue
             # Try different directions:
             if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                 new_estimate = current_estimate + input_list[nv][nh]
-                heapq.heappush(queue, (nv, nh, ddv, ddh, 1, new_estimate))
+                heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, 1))
 result = min_heat_loss(input_list)
 print(f"Minimum heat loss: {result}")
 
