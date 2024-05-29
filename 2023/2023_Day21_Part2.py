@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/21
 
-with open("2023/2023_Day21_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day21_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 
 input_list = []
@@ -17,32 +22,32 @@ horizontal_length = char_no
 print('vertical_length:',vertical_length,'horizontal_length:',horizontal_length)
 print(f'start point. line: {start_line} char: {start_char}')
 '''
-For part 2 I think I need to count the number of even and odd hashtags
-I need to consider whether the starting point is even or odd (which means changing what even and odd means)
+The starting point is even, meaning an even number of steps (0 steps) from the start position (65,65).
 The numbers of lines and columns in the input data are both odd (131,131)
 Most copies in this problem will be completely filled (in the middle of the copies)
-Out of the filled copies, each will be either 'odd' or 'even'
-The input start 'S' is located both in a blank column and row, so the propagation occurs linearly! (This is not true for the testinput)
-the S position is also at (65,65) which is perfectly in the middle of our input ...
-...meaning that new "copies" are encountered to the left, right, up, and down at the same rate
-This also means that the path will always enter in the centre of the left, right, top, or bottom side of each new input copy
+Out of the filled copies, each will be either 'odd' or 'even' (the start point will have taken)
+The input start 'S' is located both in a blank column and row, so the propagation occurs linearly! (This is not true for the testinput which is now worthless)
+the S position (65,65) is perfectly in the middle of our input ...
+...meaning that new "copies" are encountered to the left, right, up, and down at the same rate (after 65 steps the first time, after 131 steps thereafter)
+This also means that the path will always enter in the centre of the left, right, top, or bottom side of each filled input copy
 
 Considering first the copies in the right direction, the number of steps taken is 26501365.
 65 steps are required to reach the edge of the original map in the right direction.
-26501300 steps are taken outside the original map, meaning there are 202300 copies in left and right direction.
+26501300 steps are taken outside the original map, meaning there are (26501300/131=) 202300 copies in left and right direction.
 These "straight line" copies are filled along the middle line exactly to the end, but the last copy in up,down,left,right direction won't be completely filled.
 This also means there are 202300 copies in the up and down direction, so there are 809200 copies in the four "+" direcions
-The central copy is an "even copy", based on part 1. The map will fill out in this shape:
-    X
-   XXX
-  XXXXX
- XXXXXXX
-XXXXXXXXX
- XXXXXXX
-  XXXXX
-   XXX
-    X
-The number of copies not located on the perimeter is expressed by n(n-1) odd copies and n(n-1)+1 even copies.
+The central copy is an "even copy", based on the approach in Part 1. The map will fill out in this shape:
+        X
+      X X X
+    X X X X X
+  X X X X X X X 
+X X X X X X X X X
+  X X X X X X X
+    X X X X X
+      X X X
+        X
+The number of copies not located on the perimeter is expressed by (n-1)^2 even copies and n^2 odd copies.
+Because the ends are even, there are a larger number of completely filled odd copies compared to even copies.
 
 '''
 def is_in_bounds(new_coordinates):
@@ -127,14 +132,14 @@ print(f'bottom_right_even_edge: {bottom_right_even_edge}, bottom_right_odd_edge:
 even_diagonals = (top_right_even_edge + top_left_even_edge + bottom_right_even_edge + bottom_left_even_edge) * (copy_count - 1)
 odd_diagonals = (top_right_odd_edge + top_left_odd_edge + bottom_right_odd_edge + bottom_left_odd_edge) * (copy_count)
 total += (even_diagonals + odd_diagonals)
-print('grand total:',total)
-if total == 602668853020498 or total == 602668880128698 or total == 613391353042289 or total == 613391300444549 or total == 613388299113968 or total == 613391342118089 or total == 613391289520349:
-    print('answer incorrect - already submitted')
-if total <= 602668880128698:
-    print('answer incorrect - too low!')
-if total >= 613391353042289:
-    print('answer incorrect - too high!')
 
+test_dictionary = {
+    '2023/2023_Day21_input.txt':{'attempts':(613391300444549,613388299113968,613391342118089,613391289520349),
+    'low':602668880128698,'high':613391353042289,'answer':None},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,full_path,total)
 '''
 real input takes a number_of_steps of 26501365
 I need to double check whether the top, bottom, left and right are really even.
