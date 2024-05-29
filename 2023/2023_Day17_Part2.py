@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/17
 
-filename = "2023/2023_Day17_test1_input.txt"
+filename = "2023/2023_Day17_input.txt"
 
 from testmodule import test_function
 
@@ -22,47 +22,38 @@ def min_heat_loss(input_list):
     
     queue = []
     minimum_heat_loss_estimates = {}
-    heapq.heappush(queue, (0, 0, 0, 0, 1, 1))  # Start by moving right
-    heapq.heappush(queue, (0, 0, 0, 1, 0, 1))   # Start by moving down
+    heapq.heappush(queue, (0, 0, 0, 0, 0, 1))
 #                         mhl v  h dv  dh st
     while queue:
         current_estimate, v, h, dv, dh, steps  = heapq.heappop(queue)
-        if (v, h) == (vertical_length-1, horizontal_length-1):
+        if (v, h) == (vertical_length-1, horizontal_length-1) and 4 <= steps < 10:
             return current_estimate
         # Avoid revisiting unless current_loss is better
         state = (v, h, dv, dh, steps)
         if state in minimum_heat_loss_estimates and minimum_heat_loss_estimates[state] <= current_estimate:
             continue
         minimum_heat_loss_estimates[state] = current_estimate
-        for (ddv,ddh) in directions:
-            if (ddv,ddh) == (-dv,-dh):
-                continue
-            # Continue moving in the same direction if direction is permitted
-            nv, nh = v + ddv, h + ddh
-            if (ddv,ddh) == (dv,dh):
-                if steps < 4:
-                    if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
-                        new_estimate = current_estimate + input_list[nv][nh]
-                        heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 3))
-                        print(f'steps = {steps}. steps < 4, new steps: {steps + 3}')
-                        continue
-                if 4 <= steps < 10:
-                    if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
-                        new_estimate = current_estimate + input_list[nv][nh]
-                        heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 1))
-                        print(f'steps = {steps}. steps in eligible range - both continue and straight. new steps: {steps + 1}')
-            # Try different directions:
-            else:
-                if 4 <= steps < 10:
+        if steps < 10 and (dv,dh) != (0,0): # straight line case
+            nv, nh = v + dv, h + dh
+            if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
+                new_estimate = current_estimate + input_list[nv][nh]
+                heapq.heappush(queue, (new_estimate, nv, nh, dv, dh, steps + 1)) # using old direction vectors
+
+        if steps >= 4 or (dv,dh) == (0,0): # changing direction case - starting at 0 is the same process as changing direction!
+            for (ddv,ddh) in directions:
+                if (ddv,ddh) == (-dv,-dh):
+                    continue
+                # Continue moving in the same direction if direction is permitted
+                elif (ddv,ddh) != (dv,dh):
+                    nv, nh = v + ddv, h + ddh
                     if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                         new_estimate = current_estimate + input_list[nv][nh]
                         heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, 1))
-                        print(f'steps = {steps}. turning to alternate directions! new steps = {1}')
 result = min_heat_loss(input_list)
 print(f"\nMinimum heat loss: {result}")
 
 test_dictionary = {
-    '2023/2023_Day17_input.txt':{'attempts':(888,946),'low':946,'high':None,'answer':None},
+    '2023/2023_Day17_input.txt':{'attempts':(888,946),'low':946,'high':None,'answer':993},
     '2023/2023_Day17_test1_input.txt':{'answer':94},
     '2023/2023_Day17_test2_input.txt':{'answer':71}
 }
@@ -71,4 +62,6 @@ test_function(test_dictionary,filename,result)
 Correct answer of 94 heat loss has been achieved for test1_input.
 888 - answer too low.
 946 - answer too low.
+
+Correct answer obtained - 993
 '''
