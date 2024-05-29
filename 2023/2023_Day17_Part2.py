@@ -47,6 +47,9 @@ def min_heat_loss(input_list):
 result = min_heat_loss(input_list)
 print(f"Minimum heat loss: {result}")
 
+if result <= 946:
+    print('wrong answer - too low!')
 '''
-
+888 - answer too low.
+946 - answer too low.
 '''
