@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/17
 
-with open("2023/2023_Day17_input.txt",'r') as file_object:
+filename = "2023/2023_Day17_test1_input.txt"
+
+from testmodule import test_function
+
+with open(filename,'r') as file_object:
     file_content = file_object.readlines()
 input_list = []
 for line in file_content:
@@ -36,20 +40,35 @@ def min_heat_loss(input_list):
             # Continue moving in the same direction if direction is permitted
             nv, nh = v + ddv, h + ddh
             if (ddv,ddh) == (dv,dh):
-                if steps < 10:
+                if steps < 4:
+                    if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
+                        new_estimate = current_estimate + input_list[nv][nh]
+                        heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 3))
+                        print(f'steps = {steps}. steps < 4, new steps: {steps + 3}')
+                        continue
+                if 4 <= steps < 10:
                     if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
                         new_estimate = current_estimate + input_list[nv][nh]
                         heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, steps + 1))
+                        print(f'steps = {steps}. steps in eligible range - both continue and straight. new steps: {steps + 1}')
             # Try different directions:
-            elif 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
-                new_estimate = current_estimate + input_list[nv][nh]
-                heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, 1))
+            else:
+                if 4 <= steps < 10:
+                    if 0 <= nv < vertical_length and 0 <= nh < horizontal_length:
+                        new_estimate = current_estimate + input_list[nv][nh]
+                        heapq.heappush(queue, (new_estimate, nv, nh, ddv, ddh, 1))
+                        print(f'steps = {steps}. turning to alternate directions! new steps = {1}')
 result = min_heat_loss(input_list)
-print(f"Minimum heat loss: {result}")
+print(f"\nMinimum heat loss: {result}")
 
-if result <= 946:
-    print('wrong answer - too low!')
+test_dictionary = {
+    '2023/2023_Day17_input.txt':{'attempts':(888,946),'low':946,'high':None,'answer':None},
+    '2023/2023_Day17_test1_input.txt':{'answer':94},
+    '2023/2023_Day17_test2_input.txt':{'answer':71}
+}
+test_function(test_dictionary,filename,result)
 '''
+Correct answer of 94 heat loss has been achieved for test1_input.
 888 - answer too low.
 946 - answer too low.
 '''
