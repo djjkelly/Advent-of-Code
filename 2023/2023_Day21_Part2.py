@@ -22,7 +22,7 @@ horizontal_length = char_no
 print('vertical_length:',vertical_length,'horizontal_length:',horizontal_length)
 print(f'start point. line: {start_line} char: {start_char}')
 '''
-The starting point is even, meaning an even number of steps (0 steps) from the start position (65,65).
+The starting point (0,0) starts off even, but after an odd number of steps it will not be one of the possibilities.
 The numbers of lines and columns in the input data are both odd (131,131)
 Most copies in this problem will be completely filled (in the middle of the copies)
 Out of the filled copies, each will be either 'odd' or 'even' (the start point will have taken)
@@ -36,7 +36,7 @@ Considering first the copies in the right direction, the number of steps taken i
 26501300 steps are taken outside the original map, meaning there are (26501300/131=) 202300 copies in left and right direction.
 These "straight line" copies are filled along the middle line exactly to the end, but the last copy in up,down,left,right direction won't be completely filled.
 This also means there are 202300 copies in the up and down direction, so there are 809200 copies in the four "+" direcions
-The central copy is an "even copy", based on the approach in Part 1. The map will fill out in this shape:
+The central copy is an "odd copy", due to the odd number of steps in Part2. The map will fill out in this shape:
         X
       X X X
     X X X X X
@@ -46,8 +46,8 @@ X X X X X X X X X
     X X X X X
       X X X
         X
-The number of copies not located on the perimeter is expressed by (n-1)^2 even copies and n^2 odd copies.
-Because the ends are even, there are a larger number of completely filled odd copies compared to even copies.
+The number of copies not located on the perimeter is expressed by (n-1)^2 odd copies and n^2 even copies.
+Because the ends are even, there are a larger number of completely filled even copies compared to odd copies.
 
 '''
 def is_in_bounds(new_coordinates):
@@ -64,9 +64,13 @@ directions = {
 number_of_steps = 26501365 # as per problem statement
 copy_count = int((number_of_steps - start_char)/(horizontal_length + 1)) # this is the number of copies
 print('copy_count:',copy_count)
-steps_to_fully_fill = 132 # this will always be enough steps to fill a grid from the midpoint (= height//2 + width//2 + 2).
+steps_to_fully_fill = 130 # this will always be enough steps to fill a grid from the midpoint (= height//2 + width//2).
 
-def fill_copy(start_line, start_char, even_or_odd, steps):
+def fill_copy(start_line, start_char, steps):
+    if steps % 2 == 0:
+        even_or_odd = 'even'
+    else:
+        even_or_odd = 'odd'
     squares_to_evaluate = { (start_line, start_char): even_or_odd }
     squares_evaluated = {}  # Use a dictionary to track all evaluated coordinates and their statuses
     for step_count in range(steps):
@@ -88,62 +92,67 @@ def fill_copy(start_line, start_char, even_or_odd, steps):
                         squares_evaluated[new_coordinates] = new_status
                         #print('Adding new coordinate to evaluate:', new_coordinates, 'with status:', new_status)
         #print('step finished!')
-    print('fill_copy function finished!')
-    even_plots_per_filled_copy = 0
-    odd_plots_per_filled_copy = 0
+    plots_per_filled_copy = 0
     for coordinates, status in squares_evaluated.items():
         if status == 'even':
-            even_plots_per_filled_copy += 1
-        else:
-            odd_plots_per_filled_copy += 1
-    return even_plots_per_filled_copy, odd_plots_per_filled_copy
+            plots_per_filled_copy += 1
+    return plots_per_filled_copy
 
-test_even,test_odd = fill_copy(65,65,'even',64) # why is the answer for 64 the same as 65? Is this because of the blank row around the edge?
+test_even = fill_copy(65,65,64)
 print('should be 3699. test_even:',test_even) # should still be 3699 - and it is!
+if test_even == 3699:
+    print('TEST PASSED! 3699 condition met\n')
 
 # this part calculates the total reachable plots for copies which are completely filled in
-even_plots_per_filled_copy,odd_plots_per_filled_copy = fill_copy(start_line,start_char,'even',steps_to_fully_fill)
-print('even per-copy:',even_plots_per_filled_copy,'odd per-copy:',odd_plots_per_filled_copy)
-filled_copies_total = even_plots_per_filled_copy*((copy_count-1)**2) + odd_plots_per_filled_copy*(copy_count**2)
+count_for_odd_copies = fill_copy(start_line,start_char,131)
+counts_for_even_copies = fill_copy(start_line,start_char,130) # 130 is the amount of moves needed to fill the end, not 131! (130 and 132 give same answer, meaning it's full)
+
+number_of_odd_filled_copies = (copy_count - 1) ** 2
+number_of_even_filled_copies = (copy_count) ** 2
+
+filled_copies_total = (count_for_odd_copies * number_of_odd_filled_copies) + (counts_for_even_copies * number_of_even_filled_copies)
+print('even per-copy:',count_for_odd_copies,'odd per-copy:',counts_for_even_copies)
 print('filled_copies_total:',filled_copies_total)
 
 # this part calculates the partially filled copies at the farthest right, left, up, down points
-right_point, unused_variable = fill_copy(65,0,'even',130) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
-left_point, unused_variable = fill_copy(65,130,'even',130)
-top_point, unused_variable = fill_copy(0,65,'even',130)
-bottom_point, unused_variable = fill_copy(130,65,'even',130) # using 130 and 131 as the step number give the exact same result (?)
+right_point = fill_copy(65,0,130) # the last input to fill_copy is 131 as the steps go right to the end of the last copy
+left_point = fill_copy(65,130,130)
+top_point = fill_copy(0,65,130)
+bottom_point = fill_copy(130,65,130)
 
 print('right_point:',right_point,'left_point:',left_point,'top_point:',top_point,'bottom_point:',bottom_point)
 total = filled_copies_total + right_point + left_point + top_point + bottom_point
 print('intermediate total:',total)
 
 # calculation for odd and even copies on the diagonals:
-top_right_even_edge, unused_variable = fill_copy(130,0,'even',196) # 196 and 195 give different answers
-unused_variable, top_right_odd_edge = fill_copy(130,0,'odd',65) # 64 and 65 give the same answers
-top_left_even_edge, unused_variable = fill_copy(130,130,'even',196)
-unused_variable,top_left_odd_edge = fill_copy(130,130,'odd',65)
-bottom_right_even_edge, unused_variable = fill_copy(0,0,'even',196)
-unused_variable, bottom_right_odd_edge = fill_copy(0,0,'odd',65)
-bottom_left_even_edge, unused_variable = fill_copy(0,130,'even',196)
-unused_variable, bottom_left_odd_edge = fill_copy(0,130,'odd',65)
-print(f'top_right_even_edge: {top_right_even_edge},top_right_odd_edge: {top_right_odd_edge},  top_left_even_edge: {top_left_even_edge}, top_left_odd_edge: {top_left_odd_edge}')
-print(f'bottom_right_even_edge: {bottom_right_even_edge}, bottom_right_odd_edge: {bottom_right_odd_edge}, bottom_left_even_edge: {bottom_left_even_edge}, bottom_left_odd_edge: {bottom_left_odd_edge}')
+top_right_big_edge = fill_copy(130,0,195) # big edges should be odd
+top_right_small_edge = fill_copy(130,0,65) # small edges should be even
+top_left_big_edge = fill_copy(130,130,195)
+top_left_small_edge = fill_copy(130,130,65)
+bottom_right_big_edge = fill_copy(0,0,195)
+bottom_right_small_edge = fill_copy(0,0,65)
+bottom_left_big_edge = fill_copy(0,130,195)
+bottom_left_small_edge = fill_copy(0,130,65)
+print(f'top_right_even_edge: {top_right_big_edge},top_right_odd_edge: {top_right_small_edge},  top_left_big_edge: {top_left_big_edge}, top_left_small_edge: {top_left_small_edge}')
+print(f'bottom_right_big_edge: {bottom_right_big_edge}, bottom_right_small_edge: {bottom_right_small_edge}, bottom_left_big_edge: {bottom_left_big_edge}, bottom_left_small_edge: {bottom_left_small_edge}')
 
-even_diagonals = (top_right_even_edge + top_left_even_edge + bottom_right_even_edge + bottom_left_even_edge) * (copy_count - 1)
-odd_diagonals = (top_right_odd_edge + top_left_odd_edge + bottom_right_odd_edge + bottom_left_odd_edge) * (copy_count)
-total += (even_diagonals + odd_diagonals)
+big_diagonals = (top_right_big_edge + top_left_big_edge + bottom_right_big_edge + bottom_left_big_edge) * (copy_count - 1)
+small_diagonals = (top_right_small_edge + top_right_small_edge + bottom_right_small_edge + bottom_left_small_edge) * (copy_count)
+total += (big_diagonals + small_diagonals)
 
 test_dictionary = {
-    '2023/2023_Day21_input.txt':{'attempts':(613391300444549,613388299113968,613391342118089,613391289520349),
+    '2023/2023_Day21_input.txt':
+    {'attempts':(613391300444549,613388299113968,613391342118089,613391289520349,613391299230782,613391321079128,613391268076632,613391289925448,613391289924978),
     'low':602668880128698,'high':613391353042289,'answer':None},
 }
+print('total:',total)
 
 from testmodule import test_function
 test_function(test_dictionary,full_path,total)
 '''
 real input takes a number_of_steps of 26501365
-I need to double check whether the top, bottom, left and right are really even.
-I think this makes sense as the middle (0) is even (excluded from copy count) and the 202300 is even too.
+top, bottom, left and right (as on the +) are odd copies.
+This is because they are an even number of copies away from the original map, but the number of steps is odd.
 
 602668853020498 incorrect - answer too low!
 602668880128698 incorrect - answer too low!
@@ -152,4 +161,9 @@ I think this makes sense as the middle (0) is even (excluded from copy count) an
 613388299113968 incorrect
 613391342118089 incorrect
 613391289520349 incorrect
+613391299230782 incorrect - new approach to odd and even.
+613391321079128 incorrect
+613391268076632 incorrect
+613391289925448 incorrect
+613391289924978 incorrect
 '''
