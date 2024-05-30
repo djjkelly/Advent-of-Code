@@ -25,7 +25,7 @@ for line in file_content:
 / turns right to up, left to down, down to left, up to right
 (left and down swap, up and right swap)
 
-\ turns right to down, left to up, down to right, up to left - in other words left and up sw
+\\ turns right to down, left to up, down to right, up to left - in other words left and up sw
 (left and up swap, down and right swap)
 
 splitter - or | means nothing when hit by a beam end-on.
