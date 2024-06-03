@@ -31,9 +31,12 @@ for line_no,line in enumerate(file_content):
         module_type = r'conjunction'
         module_name = split_line[0][1:]
         destinations = consistent_split(split_line[1],', ')
-        modules[module_name] = {'type':module_type,'destinations':destinations,'memory':['low']}
-for item in modules.items():
-    print(item)
+        modules[module_name] = {'type':module_type,'destinations':destinations,'memory':dict({})}
+for module_name,module_info in modules.items():
+    if module_info['type'] == 'conjunction':
+        connected_inputs = {source_name: 'low' for source_name, source_info in modules.items() if module_name in source_info.get('destinations', [])}
+        module_info['memory'] = connected_inputs
+    print(f'{module_name},{module_info}')
 
 def send_pulses(modules,button_pushes):
     total_low = 0
@@ -45,45 +48,43 @@ def send_pulses(modules,button_pushes):
         next_status = []
         print('\nnew push!\n')
         high_pulse_count = sum(item.count('high') for item in current_status)
-        low_pulse_count = sum(item.count('low') for item in current_status)
-        while current_status != []:
+        low_pulse_count = sum(item.count('low') for item in current_status) + 1
+        while current_status != []: # continues while signals being sent
             for current_module,pulse in current_status: # this iterates through an entire batch of commands before moving onto the next
-                    next_modules = modules[current_module]['destinations']
-                    if modules[current_module]['type'] == 'flip-flop':
-                        print('flip-flop')
-                        if pulse == 'high':
-                            next_pulse = None
-                            print(f'current module {current_module} receives high pulse - ignoring!')
-                        elif pulse == 'low':
-                            if modules[current_module]['state'] == 'off':
-                                modules[current_module]['state'] = 'on'
-                                next_pulse = 'high'
-                                high_pulse_count += 1
-                                print(f'current module {current_module} receives low pulse, switches on and produces a high pulse')
-                            elif modules[current_module]['state'] == 'on':
-                                modules[current_module]['state'] = 'off'
-                                next_pulse = 'low'
-                                low_pulse_count += 1
-                                print(f'current module {current_module} receives low pulse, switches off and produces a low pulse')
-                    elif modules[current_module]['type'] == 'conjunction':
-                        if pulse == 'low':
-                            print(f'current module {current_module} receives low pulse, conjunction memory updated to low')
-                            modules[current_module]['memory'] = 'low'
-                        elif pulse == 'high':
-                            print(f'current module {current_module} receives high pulse, conjunction memory updated to high')
-                            modules[current_module]['memory'] = 'high'
-                        memory = modules[current_module]['memory']
-                        if memory == 'high':
-                            print('all memory high - sending low pulse')
-                            next_pulse = 'low'
-                            low_pulse_count += 1
-                        else:
-                            print('not all memory high - sending high pulse')
+                if current_module not in modules:
+                    continue
+                next_modules = modules[current_module]['destinations']
+                if modules[current_module]['type'] == 'flip-flop':
+                    print('flip-flop')
+                    if pulse == 'high':
+                        next_pulse = None
+                        print(f'current module {current_module} receives high pulse - ignoring!')
+                    elif pulse == 'low':
+                        if modules[current_module]['state'] == 'off':
+                            modules[current_module]['state'] = 'on'
                             next_pulse = 'high'
                             high_pulse_count += 1
-                    if pulse != None:
-                        next_status.extend([(item,next_pulse) for item in next_modules])
-                    print(f'for loop complete! high pulses: {high_pulse_count}, low pulses: {low_pulse_count}')
+                            print(f'current module {current_module} receives low pulse, switches on and produces a high pulse')
+                        elif modules[current_module]['state'] == 'on':
+                            modules[current_module]['state'] = 'off'
+                            next_pulse = 'low'
+                            low_pulse_count += 1
+                            print(f'current module {current_module} receives low pulse, switches off and produces a low pulse')
+                elif modules[current_module]['type'] == 'conjunction':
+                    if all(value == 'high' for value in modules[current_module]['memory'].values()):
+                        print('all memory high - sending low pulse')
+                        next_pulse = 'low'
+                        low_pulse_count += 1
+                    else:
+                        print('not all memory high - sending high pulse')
+                        next_pulse = 'high'
+                        high_pulse_count += 1
+                if next_pulse != None:
+                    next_status.extend([(item,next_pulse) for item in next_modules])
+                print(f'for loop complete! high pulses: {high_pulse_count}, low pulses: {low_pulse_count}')
+            for next_module_name,next_pulse in next_status:
+                if modules[next_module_name]['type'] == 'conjunction':
+                    modules[next_module_name]['memory'][current_module] = next_pulse
             current_status = next_status
             next_status = []
         total_low += low_pulse_count
