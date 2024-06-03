@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-#https://adventofcode.com/2023/day/21
+#https://adventofcode.com/2023/day/20
 
 folder = '2023/'
-filename = '2023_Day20_test1_input'
+filename = '2023_Day20_test2_input'
 extension = '.txt'
 full_path = folder + filename + extension
 total = 0
@@ -46,16 +46,17 @@ def send_pulses(modules,button_pushes):
         current_modules = modules['broadcaster']['destinations']
         current_status = [(item,pulse) for item in current_modules]
         next_status = []
-        print('\nnew push!\n')
+        print('\nnew push! starts off with button to broadcast, low pulses: 1')
         high_pulse_count = sum(item.count('high') for item in current_status)
         low_pulse_count = sum(item.count('low') for item in current_status) + 1
+        print(f'broadcasting to {current_modules}! high pulses: {high_pulse_count}, low pulses: {low_pulse_count}')
         while current_status != []: # continues while signals being sent
             for current_module,pulse in current_status: # this iterates through an entire batch of commands before moving onto the next
                 if current_module not in modules:
                     continue
                 next_modules = modules[current_module]['destinations']
                 if modules[current_module]['type'] == 'flip-flop':
-                    print('flip-flop')
+                    print(f'flip-flop module: {current_module}')
                     if pulse == 'high':
                         next_pulse = None
                         print(f'current module {current_module} receives high pulse - ignoring!')
@@ -64,31 +65,36 @@ def send_pulses(modules,button_pushes):
                             modules[current_module]['state'] = 'on'
                             next_pulse = 'high'
                             high_pulse_count += 1
-                            print(f'current module {current_module} receives low pulse, switches on and produces a high pulse')
+                            print(f'current module \'{current_module}\' receives low pulse, switches on and sends a high pulse to {next_modules}')
                         elif modules[current_module]['state'] == 'on':
                             modules[current_module]['state'] = 'off'
                             next_pulse = 'low'
                             low_pulse_count += 1
-                            print(f'current module {current_module} receives low pulse, switches off and produces a low pulse')
+                            print(f'current module \'{current_module}\' receives low pulse, switches off and sends a low pulse to {next_modules}')
                 elif modules[current_module]['type'] == 'conjunction':
+                    print(f'conjunction module: {current_module}')
                     if all(value == 'high' for value in modules[current_module]['memory'].values()):
-                        print('all memory high - sending low pulse')
                         next_pulse = 'low'
                         low_pulse_count += 1
+                        print(f'sent a {next_pulse} to {modules[current_module]['destinations']}')
                     else:
-                        print('not all memory high - sending high pulse')
+                        print(f'not all memory high - \'{current_module}\' sends high pulse to {modules[current_module]['destinations']}')
                         next_pulse = 'high'
                         high_pulse_count += 1
                 if next_pulse != None:
                     next_status.extend([(item,next_pulse) for item in next_modules])
                 print(f'for loop complete! high pulses: {high_pulse_count}, low pulses: {low_pulse_count}')
             for next_module_name,next_pulse in next_status:
-                if modules[next_module_name]['type'] == 'conjunction':
-                    modules[next_module_name]['memory'][current_module] = next_pulse
+                if next_module_name in modules:
+                    if modules[next_module_name]['type'] == 'conjunction':
+                        if current_module in modules[next_module_name]['memory']:
+                            modules[next_module_name]['memory'][current_module] = next_pulse
             current_status = next_status
             next_status = []
+            print('batch of signals complete!')
         total_low += low_pulse_count
         total_high += high_pulse_count
+    print('total_low:',total_low,'total_high:',total_high)
     total = total_low * total_high
     return total
 
