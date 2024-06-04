@@ -38,10 +38,21 @@ for module_name,module_info in modules.items():
         module_info['memory'] = connected_inputs
     print(f'{module_name},{module_info}')
 
+'''
+The number of pushes required is very large and cannot reasonably be iterated to its full length.
+The problem seems to be one of finding loops in the network.
+'rx' module is downstream of the conjunction module 'kh'.
+'kh' will send a low pulse only when all memory is 'high'
+'kh' has the following memory as initialised: {'pv': 'low', 'qh': 'low', 'xm': 'low', 'hz': 'low'}
+If I can figure out when each of these modules will be 'high', I can find a lowest common multiple.
+'''
+required_modules = {'pv': [], 'qh': [], 'xm': [], 'hz': []}
+
 def send_pulses(modules,button_pushes):
     total_low = 0
     total_high = 0
     for push in range(1,button_pushes+1):
+        rx_count = 0
         pulse = 'low'
         current_modules = modules['broadcaster']['destinations']
         current_status = [(item,pulse) for item in current_modules]
@@ -88,6 +99,8 @@ def send_pulses(modules,button_pushes):
                             if current_module in modules[next_module_name]['memory']:
                                 if next_pulse != None:
                                     modules[next_module_name]['memory'][current_module] = next_pulse
+                    if next_module_name == 'rx' and next_pulse == 'low':
+                        print('problem solved! push number: ',push)
                 if next_pulse != None:
                     next_status.extend([(item,next_pulse) for item in next_modules])
             print(f'for loop complete! high pulses: {high_pulse_count}, low pulses: {low_pulse_count}')
@@ -100,19 +113,14 @@ def send_pulses(modules,button_pushes):
     total = total_low * total_high
     return total
 
-button_pushes = 1000
+button_pushes = 1000000
 total = send_pulses(modules,button_pushes)
 print('total:',total)
 test_dictionary = {
     '2023_Day20_input':
     {'attempts':(None),
     'low':None,'high':None,'answer':731517480},
-    '2023_Day20_test1_input':
-    {'attempts':(None),
-    'answer':32000000},
-    '2023_Day20_test2_input':
-    {'attempts':(None),
-    'answer':11687500},
+
 }
 
 from testmodule import test_function
