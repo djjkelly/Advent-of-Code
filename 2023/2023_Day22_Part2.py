@@ -133,7 +133,7 @@ def cascade_bricks(base_brick, key_is_current_dict, key_is_next_dict):
     while queue:
         current_brick = queue.pop(0)
         if current_brick not in key_is_current_dict:
-            break
+            continue
         for next_brick in key_is_current_dict[current_brick]:
             if key_is_next_dict[next_brick] == [current_brick]: # current brick is only support for next brick
                 'add to falling bricks. add to queue'
@@ -161,7 +161,7 @@ print('total:',total)
 test_dictionary = {
     '2023_Day22_input':
     {'attempts':(None),
-    'low':4641,'high':None,'answer':None},
+    'low':4641,'high':None,'answer':86556},
     '2023_Day22_testinput':
     {'answer':7},
 }
