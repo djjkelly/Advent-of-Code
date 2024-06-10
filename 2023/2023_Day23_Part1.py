@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/23
 
 folder = '2023/'
-filename = '2023_Day23_testinput'
+filename = '2023_Day23_input'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -71,18 +71,17 @@ def explore_section(start_state):
             new_character = input_list[new_v][new_h]
             if new_character == '#': # ignore forest
                 continue
-            if new_character in forced_directions: # has reached the end of the section!
-                section_evaluation_ongoing = False
-                section_length += 1
-                v,h,direction = new_v,new_h,new_direction
-                break
             if new_character == '.':
                 v,h,direction = new_v,new_h,new_direction
                 break
-
-
-    end_state = (new_v,new_h,new_direction)
-    return end_state, section_length
+            if new_character in forced_directions: # has reached the end of the section!
+                section_evaluation_ongoing = False
+                section_length += 1
+                forced_direction = forced_directions[new_character]
+                (fdv,fdh) = directions[forced_direction]
+                end_state = (new_v + fdv, new_h + fdh,forced_direction)
+                return end_state, section_length
+    return (new_v,new_h,new_direction),section_length
 #end_state, section_length = explore_section((0,1,'down')) # aiming for 18,19
 #print('end_state',end_state,'section_length',section_length)
 
@@ -105,7 +104,7 @@ def explore_all_sections(input_list):
         if end_v == None or end_h == None:
             continue
         end_dv,end_dh = directions[end_direction]
-        v,h = end_v + end_dv, end_h + end_dh
+        v,h = end_v, end_h
         print(f'section ends at ({end_v},{end_h}), new state at ({v},{h})')
         # find all viable directions for the next sections to be added to the queue
         for new_direction, (dv,dh) in directions.items():
@@ -134,16 +133,16 @@ def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
         v, h, direction = current_path[0]
+        (dv,dh) = directions[direction]
         current_total = current_path[1]
         if v is not None and h is not None:
-            (dv,dh) = directions[direction]
-            new_v,new_h = v + dv, h + dh
-            print('new_v',new_v,'new_h',new_h)
             for new_direction,(ndv,ndh) in directions.items():
-                next_status = (new_v + ndv, new_h + ndh, new_direction)
+                if (dv,dh) == (-ndv,-ndh):
+                    'continue'
+                next_status = (v + ndv, h + ndh, new_direction)
                 if next_status in start_end_mapping:
                     next_end_status = start_end_mapping[next_status]
-                    paths_to_explore.append((next_end_status,current_total + 1 + section_lengths[next_end_status]))
+                    paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status]))
         else:
             total = current_total + section_lengths[(None,None,'down')]
             list_of_totals.append(total)
@@ -166,5 +165,6 @@ test_dictionary = {
 from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
+2118 - answer too high
 
 '''
