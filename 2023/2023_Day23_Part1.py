@@ -89,14 +89,18 @@ def explore_section(start_state):
 def explore_all_sections(input_list):
     initial_state = (start_v,start_h,start_direction)
     queue = [initial_state]
-    explored_sections = {}
+    section_lengths = {}
+    start_end_mapping = {}
     while queue:
         start_state = queue.pop(0)
         end_state,section_length = explore_section(start_state)
-        if end_state in explored_sections:
+        if start_state == initial_state:
+            initial_end_state = end_state
+        if end_state in section_lengths:
             print('end state dupicate encountered - check this!')
         else:
-            explored_sections[end_state] = section_length
+            section_lengths[end_state] = section_length
+            start_end_mapping[start_state] = end_state
         end_v,end_h,end_direction = end_state[0],end_state[1],end_state[2]
         if end_v == None or end_h == None:
             continue
@@ -119,10 +123,36 @@ def explore_all_sections(input_list):
                     new_state = (new_v,new_h,new_direction)
                     if new_state not in queue:
                         queue.append(new_state)
-    return explored_sections
-explored_sections = explore_all_sections(input_list)
+    return section_lengths, initial_end_state, start_end_mapping
+section_lengths, initial_end_state, start_end_mapping = explore_all_sections(input_list)
 # seems ok so far. For testinput it identifies 12 sections and the new states seem to be at the correct points
 
+def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
+    running_total = section_lengths[initial_end_state]
+    paths_to_explore = [(initial_end_state,running_total)]
+    list_of_totals = []
+    while paths_to_explore:
+        current_path = paths_to_explore.pop(0)
+        v, h, direction = current_path[0]
+        current_total = current_path[1]
+        if v is not None and h is not None:
+            (dv,dh) = directions[direction]
+            new_v,new_h = v + dv, h + dh
+            print('new_v',new_v,'new_h',new_h)
+            for new_direction,(ndv,ndh) in directions.items():
+                next_status = (new_v + ndv, new_h + ndh, new_direction)
+                if next_status in start_end_mapping:
+                    next_end_status = start_end_mapping[next_status]
+                    paths_to_explore.append((next_end_status,current_total + 1 + section_lengths[next_end_status]))
+        else:
+            total = current_total + section_lengths[(None,None,'down')]
+            list_of_totals.append(total)
+    max_total = 0
+    for total in list_of_totals:
+        if total > max_total:
+            max_total = total
+    return max_total
+total = find_longest_path(section_lengths, initial_end_state, start_end_mapping)
 
 print('total:',total)
 test_dictionary = {
