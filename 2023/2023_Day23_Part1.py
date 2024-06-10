@@ -57,6 +57,12 @@ def explore_section(start_state):
     while section_evaluation_ongoing:
         section_length += 1
         for new_direction,(dv,dh) in directions.items():
+            if (v,h) == (vertical_length - 2,horizontal_length - 2): # end of puzzle (one move away from end)
+                section_length += 1
+                section_evaluation_ongoing = False
+                print('reached end of puzzle!')
+                new_v,new_h = None,None
+                break
             if (-dv,-dh) == directions[direction]:
                 continue # can't go back on ourselves
             new_v, new_h = v + dv, h + dh
@@ -77,14 +83,46 @@ def explore_section(start_state):
 
     end_state = (new_v,new_h,new_direction)
     return end_state, section_length
-end_state, section_length = explore_section((0,1,'down')) # aiming for 18,19
-print('end_state',end_state,'section_length',section_length)
+#end_state, section_length = explore_section((0,1,'down')) # aiming for 18,19
+#print('end_state',end_state,'section_length',section_length)
 
-def explore_paths():
-    steps_required = 0 # consider setting this to 1
-    state = (start_h,start_v,start_direction)
-    return steps_required
-total = explore_paths()
+def explore_all_sections(input_list):
+    initial_state = (start_v,start_h,start_direction)
+    queue = [initial_state]
+    explored_sections = {}
+    while queue:
+        start_state = queue.pop(0)
+        end_state,section_length = explore_section(start_state)
+        if end_state in explored_sections:
+            print('end state dupicate encountered - check this!')
+        else:
+            explored_sections[end_state] = section_length
+        end_v,end_h,end_direction = end_state[0],end_state[1],end_state[2]
+        if end_v == None or end_h == None:
+            continue
+        end_dv,end_dh = directions[end_direction]
+        v,h = end_v + end_dv, end_h + end_dh
+        print(f'section ends at ({end_v},{end_h}), new state at ({v},{h})')
+        # find all viable directions for the next sections to be added to the queue
+        for new_direction, (dv,dh) in directions.items():
+            if (dv,dh) == (-end_dv,-end_dh):
+                continue
+            new_v, new_h = v + dv,h + dh
+            if not is_in_bounds (new_v,new_h):
+                continue
+            new_character = input_list[new_v][new_h]
+            if new_character == '#':
+                continue
+            if new_character in forced_directions:
+                if forced_directions[new_character] == new_direction:
+                    print('new section found! adding to queue')
+                    new_state = (new_v,new_h,new_direction)
+                    if new_state not in queue:
+                        queue.append(new_state)
+    return explored_sections
+explored_sections = explore_all_sections(input_list)
+# seems ok so far. For testinput it identifies 12 sections and the new states seem to be at the correct points
+
 
 print('total:',total)
 test_dictionary = {
