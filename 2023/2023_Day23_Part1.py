@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/23
 
 folder = '2023/'
-filename = '2023_Day23_input'
+filename = '2023_Day23_testinput'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -16,7 +16,7 @@ vertical_length = len(input_list)
 horizontal_length = len(input_list[0])
 start_v = 0
 start_h = 1
-end_v = vertical_length - 1
+end_v = vertical_length - 2
 end_h = horizontal_length - 2
 start_direction = 'down'
 # these simplifications are true for both test and real input.
@@ -35,7 +35,7 @@ forced_directions = {
 }
 
 def is_in_bounds(new_v,new_h):
-    return 1 <= new_v < vertical_length - 1 and 1 <= new_h < horizontal_length - 1 # we never have to explore the outer edge.
+    return 0 <= new_v < vertical_length - 1 and 0 <= new_h < horizontal_length - 1
 
 '''
 Any section of path which does not contain a fork can have its length stored in memory for later reuse.
@@ -54,10 +54,10 @@ def explore_section(start_state):
     v,h,direction = start_state
     section_length = 0
     section_evaluation_ongoing = True
-    while section_evaluation_ongoing:
+    while section_evaluation_ongoing: # each iteration represents a step along the path section
         section_length += 1
         for new_direction,(dv,dh) in directions.items():
-            if (v,h) == (vertical_length - 2,horizontal_length - 2): # end of puzzle (one move away from end)
+            if (v,h) == (end_v,end_h): # end of puzzle (one move away from end)
                 section_length += 1
                 section_evaluation_ongoing = False
                 print('reached end of puzzle!')
@@ -125,6 +125,8 @@ def explore_all_sections(input_list):
     return section_lengths, initial_end_state, start_end_mapping
 section_lengths, initial_end_state, start_end_mapping = explore_all_sections(input_list)
 # seems ok so far. For testinput it identifies 12 sections and the new states seem to be at the correct points
+for section,length in section_lengths.items():
+    print('section end: ',section,'length',length) # central lengths seem off by one?
 
 def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
     running_total = section_lengths[initial_end_state]
@@ -146,6 +148,7 @@ def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
         else:
             total = current_total + section_lengths[(None,None,'down')]
             list_of_totals.append(total)
+    print(f'list_of_totals {list_of_totals} - should be ( 90, 82,  74, 82, 86 and 94)')
     max_total = 0
     for total in list_of_totals:
         if total > max_total:
@@ -157,7 +160,7 @@ print('total:',total)
 test_dictionary = {
     '2023_Day23_input':
     {'attempts':(None),
-    'low':None,'high':None,'answer':None},
+    'low':None,'high':2118,'answer':None},
     '2023_Day23_testinput':
     {'answer':94},
 }
@@ -166,5 +169,6 @@ from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
 2118 - answer too high
+testinput totals are incorrect by either 1 or 2 (too high)
 
 '''
