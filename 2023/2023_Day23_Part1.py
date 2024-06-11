@@ -120,12 +120,12 @@ def find_longest_path_length(section_lengths, start_end_mapping):
         v, h, direction = current_path[0]
         current_total = current_path[1]
         if v is not None and h is not None:
-            (dv,dh) = directions[direction]
             for new_direction,(ndv,ndh) in directions.items():
+                dv,dh = directions[direction]
                 if (dv,dh) == (-ndv,-ndh):
                     'continue'
-                next_status = (v + ndv, h + ndh, new_direction)
-                if next_status in start_end_mapping:
+                next_status = (v, h, new_direction)
+                if next_status in start_end_mapping: # is this necessary?
                     next_end_status = start_end_mapping[next_status]
                     paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status]))
         else:
