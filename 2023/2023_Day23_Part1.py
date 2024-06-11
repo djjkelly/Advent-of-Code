@@ -41,12 +41,12 @@ def is_in_bounds(new_v,new_h):
 Any section of path which does not contain a fork can have its length stored in memory for later reuse.
 If the start and end coordinates and direction are recorded, this memoised path can be accessed from both sides.
 
-It looks like there aren't any > symbols going straight into the forest.
-Also, single sections don't seem to have 
+It looks like there aren't any '>' symbols going straight into the forest.
+Also, single sections don't seem to have any '<', '>', 'v', '^' symbols on them.
 Rather the slippery slopes seem to act as 'gates' at both ends of each section.
 It looks like, if I can't get in one end, then I can't get out the other either.
-If I can get in one end of the section, then I can get out the other.
-The sections basically all start/end with a '<', '>', 'v', '^' symbol.
+If I can get in one end of the section, then I can also get out the other.
+The sections all start/end with a '<', '>', 'v', '^' symbol (except first and last).
 This also means that all "sections" are one-way.
 '''
 
@@ -61,8 +61,8 @@ def explore_section(start_state):
                 section_length += 1
                 section_evaluation_ongoing = False
                 print('reached end of puzzle!')
-                new_v,new_h = None,None
-                break
+                end_state = (None,None,new_direction)
+                return end_state, section_length
             if (-dv,-dh) == directions[direction]:
                 continue # can't go back on ourselves
             new_v, new_h = v + dv, h + dh
@@ -81,7 +81,6 @@ def explore_section(start_state):
                 (fdv,fdh) = directions[forced_direction]
                 end_state = (new_v + fdv, new_h + fdh,forced_direction)
                 return end_state, section_length
-    return (new_v,new_h,new_direction),section_length
 #end_state, section_length = explore_section((0,1,'down')) # aiming for 18,19
 #print('end_state',end_state,'section_length',section_length)
 
@@ -122,15 +121,16 @@ def explore_all_sections(input_list):
                     new_state = (new_v,new_h,new_direction)
                     if new_state not in queue:
                         queue.append(new_state)
-    return section_lengths, initial_end_state, start_end_mapping
-section_lengths, initial_end_state, start_end_mapping = explore_all_sections(input_list)
+    return section_lengths, start_end_mapping
+section_lengths, start_end_mapping = explore_all_sections(input_list)
 # seems ok so far. For testinput it identifies 12 sections and the new states seem to be at the correct points
 for section,length in section_lengths.items():
     print('section end: ',section,'length',length) # central lengths seem off by one?
 
-def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
-    running_total = section_lengths[initial_end_state]
-    paths_to_explore = [(initial_end_state,running_total)]
+def find_longest_path_length(section_lengths, start_end_mapping):
+    first_section_end_state = start_end_mapping[(start_v,start_h,start_direction)]
+    running_total = section_lengths[first_section_end_state]
+    paths_to_explore = [(first_section_end_state,running_total)]
     list_of_totals = []
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
@@ -154,7 +154,7 @@ def find_longest_path(section_lengths, initial_end_state, start_end_mapping):
         if total > max_total:
             max_total = total
     return max_total
-total = find_longest_path(section_lengths, initial_end_state, start_end_mapping)
+total = find_longest_path_length(section_lengths, start_end_mapping)
 
 print('total:',total)
 test_dictionary = {
