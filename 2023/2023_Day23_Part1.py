@@ -113,12 +113,15 @@ for section,length in section_lengths.items():
 def find_longest_path_length(section_lengths, start_end_mapping):
     first_section_end_state = start_end_mapping[(start_v,start_h,start_direction)]
     running_total = section_lengths[first_section_end_state]
-    paths_to_explore = [(first_section_end_state,running_total)]
+    section_count = 1
+    paths_to_explore = [(first_section_end_state, running_total, section_count)]
     list_of_totals = []
+    list_of_section_counts = []
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
         v, h, direction = current_path[0]
         current_total = current_path[1]
+        section_count = current_path[2]
         if v is not None and h is not None:
             for new_direction,(ndv,ndh) in directions.items():
                 dv,dh = directions[direction]
@@ -127,11 +130,14 @@ def find_longest_path_length(section_lengths, start_end_mapping):
                 next_status = (v, h, new_direction)
                 if next_status in start_end_mapping: # is this necessary?
                     next_end_status = start_end_mapping[next_status]
-                    paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status]))
+                    section_count += 1
+                    paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status],section_count))
         else:
             total = current_total + section_lengths[(None,None,None)]
             list_of_totals.append(total)
+            list_of_section_counts.append(section_count)
     print(f'list_of_totals {list_of_totals} - should be ( 90, 82,  74, 82, 86, 94 )')
+    print(f'section_counts:',list_of_section_counts)
     max_total = 0
     for total in list_of_totals:
         if total > max_total:
