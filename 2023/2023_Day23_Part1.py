@@ -7,7 +7,6 @@ extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
-total = 0
 input_list = []
 for line in file_content:
     line = line.strip()
@@ -46,7 +45,9 @@ This also means that all "sections" are one-way.
 
 def explore_section(start_state):
     v,h,direction = start_state
-    section_length = 0
+    dv, dh = directions[direction]
+    section_length = 1
+    v,h = v + dv, h + dh
     while True: # each iteration represents a step along the path section
         section_length += 1
         for new_direction,(dv,dh) in directions.items():
@@ -71,8 +72,6 @@ def explore_section(start_state):
                 (fdv,fdh) = directions[new_character]
                 end_state = (new_v + fdv, new_h + fdh,new_character)
                 return end_state, section_length
-#end_state, section_length = explore_section((0,1,'down')) # aiming for 18,19
-#print('end_state',end_state,'section_length',section_length)
 
 def explore_all_sections(input_list):
     initial_state = (start_v,start_h,start_direction)
@@ -87,30 +86,27 @@ def explore_all_sections(input_list):
         else:
             section_lengths[end_state] = section_length
             start_end_mapping[start_state] = end_state
-        end_v,end_h,end_direction = end_state[0],end_state[1],end_state[2]
-        if end_v == None or end_h == None:
+        v,h,direction = end_state[0],end_state[1],end_state[2]
+        if v == None or end_h == None:
             continue
-        end_dv,end_dh = directions[end_direction]
-        v,h = end_v, end_h
-        print(f'section ends at ({end_v},{end_h}), new state at ({v},{h})')
+        dv,dh = directions[direction]
         # find all viable directions for the next sections to be added to the queue
-        for (dv,dh) in directions.values():
-            if (dv,dh) == (-end_dv,-end_dh):
+        for new_direction,(new_dv,new_dh) in directions.items():
+            if (new_dv,new_dh) == (-dv,-dh):
                 continue
-            new_v, new_h = v + dv,h + dh
+            new_v , new_h = (v + new_dv) , (h + new_dh)
             if not is_in_bounds (new_v,new_h):
                 continue
             new_character = input_list[new_v][new_h]
             if new_character == '#':
                 continue
-            if new_character in directions:
-                new_state = (new_v,new_h,new_character)
+            if new_character is new_direction:
+                new_state = (v,h,new_character)
                 if new_state not in queue:
                     queue.append(new_state)
     return section_lengths, start_end_mapping
 
 section_lengths, start_end_mapping = explore_all_sections(input_list)
-# seems ok so far. For testinput it identifies 12 sections and the new states seem to be at the correct points
 for section,length in section_lengths.items():
     print('section end: ',section,'length',length) # central lengths seem off by one?
 
