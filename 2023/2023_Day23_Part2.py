@@ -114,33 +114,30 @@ Now that we can travel in any direction along a section, I need to record whethe
 It should be sufficient to do this using a start and end coordinate for each section.
 
 To decide whether a path should be added to the queue, any 'directions' character should be permissible.
+
+In order to not step on any tile twice, we just need to avoid revisiting all endpoints of the sections.
 '''
 
 def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
     first_section_end_state = start_end_mapping[initial_state]
     running_total = section_lengths[first_section_end_state]
-    end_states_explored = [(first_section_end_state)]
-    paths_to_explore = [(initial_state, first_section_end_state, running_total, end_states_explored)]
+    coordinates_explored = [(first_section_end_state[0],first_section_end_state[1])]
+    paths_to_explore = [(first_section_end_state, running_total, coordinates_explored)]
     list_of_totals = []
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
-        start_v, start_h, start_direction = current_path[0]
-        end_v, end_h, end_direction = current_path[1]
-        current_total = current_path[2]
-        end_states_explored = current_path[3]
-        opposite_direction = opposite_directions[start_direction]
-        end_states_explored.append((start_v,start_h,opposite_direction))
+        end_v, end_h, end_direction = current_path[0]
+        current_total = current_path[1]
         if end_v is not None and end_h is not None:
-            for new_direction,(ndv,ndh) in directions.items():
-                dv,dh = directions[end_direction]
-                if (dv,dh) == (-ndv,-ndh):
-                    continue
+            for new_direction in directions:
+                coordinates_explored = current_path[2][:] # using slicing to create a copy of the list
                 next_start_state = (end_v, end_h, new_direction)
                 if next_start_state in start_end_mapping:
                     next_end_state = start_end_mapping[next_start_state]
-                    if next_end_state not in end_states_explored:
-                        end_states_explored.append(next_end_state)
-                        paths_to_explore.append((next_start_state,next_end_state,current_total + section_lengths[next_end_state],end_states_explored))
+                    next_coordinates = (next_end_state[0],next_end_state[1])
+                    if next_coordinates not in coordinates_explored:
+                        coordinates_explored.append(next_coordinates)
+                        paths_to_explore.append((next_end_state,current_total + section_lengths[next_end_state],coordinates_explored))
         else:
             total = current_total
             list_of_totals.append(total)
@@ -164,6 +161,15 @@ test_dictionary = {
 from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
+The longest path in the testinput goes:
+(5,3) 'v'
+(13,5) 'v'
+(19,13) '>'
+(13,13) '^' - this is missing from the section_lengths
+(3,11) '^'
+(11,21) 'v'
+(19,19) 'v'
+(None,None)
 
 
 '''
