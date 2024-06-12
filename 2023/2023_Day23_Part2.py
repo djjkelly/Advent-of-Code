@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/23
 
 folder = '2023/'
-filename = '2023_Day23_testinput'
+filename = '2023_Day23_input'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -47,7 +47,6 @@ def explore_section(start_state):
         section_length += 1
         for new_direction,(dv,dh) in directions.items():
             if (v,h) == (end_v,end_h): # end of puzzle (one move away from end)
-                print('reached end of puzzle!')
                 end_state = (None,None,None)
                 return end_state, section_length
             if (-dv,-dh) == directions[direction]:
@@ -63,12 +62,19 @@ def explore_section(start_state):
                 break
             if new_character in directions: # has reached the end of the section!
                 section_length += 1
-                (fdv,fdh) = directions[new_character]
-                end_state = (new_v + fdv, new_h + fdh,new_character)
+                (fdv,fdh) = directions[new_direction]
+                if new_direction == new_character:
+                    end_state = (new_v + fdv, new_h + fdh, new_direction)
+                else:
+                    end_state = (new_v + fdv, new_h + fdh, new_character)
                 return end_state, section_length
+(restricted_v,restricted_h,initial_end_direction),_ = explore_section((0,1,'v'))
+restricted_direction = opposite_directions[initial_end_direction]
+restricted_state = restricted_v,restricted_h,restricted_direction
 
 def explore_all_sections(input_list,initial_state):
     queue = [initial_state]
+    seen = []
     section_lengths = {}
     start_end_mapping = {}
     while queue:
@@ -84,7 +90,7 @@ def explore_all_sections(input_list,initial_state):
             start_v, start_h, start_direction = start_state
             opposite_of_start_direction = opposite_directions[start_direction]
             section_lengths[(start_v,start_h,opposite_of_start_direction)] = section_length
-            start_end_mapping[(end_v,end_h,opposite_of_end_direction)] = (end_v,end_h,opposite_of_end_direction)
+            start_end_mapping[(end_v,end_h,opposite_of_end_direction)] = (start_v,start_h,opposite_of_start_direction) # found a mistake here
 
         if end_v == None or end_h == None:
             continue
@@ -101,13 +107,17 @@ def explore_all_sections(input_list,initial_state):
                 continue
             if new_character in directions:
                 new_state = (end_v,end_h,new_direction)
-                if new_state not in queue:
+                if new_state not in queue and new_state not in seen and new_state != restricted_state:# restricted_state stops the first section being explored backwards
                     queue.append(new_state)
+                    seen.append(new_state) # to prevent infinite loops when sections have already been visited
     return section_lengths, start_end_mapping
 initial_state = (initial_v,initial_h,initial_direction)
 section_lengths, start_end_mapping = explore_all_sections(input_list,initial_state)
-for section,length in section_lengths.items():
-    print('section end: ',section,'length',length) # these print statements look correct to me!
+for start,end in start_end_mapping.items():
+    if end in section_lengths:
+        print('start:',start,'. end:',end,'. section length:',section_lengths[end])
+    else:
+        print('start:',start,'. end:',end,'. section length not found')
 
 '''
 Now that we can travel in any direction along a section, I need to record whether the path has already been taken.
@@ -123,7 +133,7 @@ def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
     running_total = section_lengths[first_section_end_state]
     coordinates_explored = [(first_section_end_state[0],first_section_end_state[1])]
     paths_to_explore = [(first_section_end_state, running_total, coordinates_explored)]
-    list_of_totals = []
+    max_total = 0
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
         end_v, end_h, end_direction = current_path[0]
@@ -140,20 +150,17 @@ def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
                         paths_to_explore.append((next_end_state,current_total + section_lengths[next_end_state],coordinates_explored))
         else:
             total = current_total
-            list_of_totals.append(total)
-    print(f'list_of_totals {list_of_totals}')
-    max_total = 0
-    for total in list_of_totals:
-        if total > max_total:
-            max_total = total
+            if total > max_total:
+                max_total = total
+            print('total:',total,'. max_total:',max_total)
     return max_total
 total = find_longest_path_length(section_lengths, start_end_mapping,initial_state)
 
 print('total:',total)
 test_dictionary = {
     '2023_Day23_input':
-    {'attempts':(None),
-    'low':None,'high':None,'answer':None},
+    {'attempts':(3300,3600),
+    'low':3600,'high':None,'answer':None},
     '2023_Day23_testinput':
     {'answer':154},
 }
@@ -171,5 +178,7 @@ The longest path in the testinput goes:
 (19,19) 'v'
 (None,None)
 
+highest value achieved so far:
+3614
 
 '''
