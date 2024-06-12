@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/23
 
 folder = '2023/'
-filename = '2023_Day23_testinput'
+filename = '2023_Day23_input'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -52,7 +52,6 @@ def explore_section(start_state):
         section_length += 1
         for new_direction,(dv,dh) in directions.items():
             if (v,h) == (end_v,end_h): # end of puzzle (one move away from end)
-                section_length += 1
                 print('reached end of puzzle!')
                 end_state = (None,None,None)
                 return end_state, section_length
@@ -133,7 +132,7 @@ def find_longest_path_length(section_lengths, start_end_mapping):
                     section_count += 1
                     paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status],section_count))
         else:
-            total = current_total + section_lengths[(None,None,None)]
+            total = current_total # + section_lengths[(None,None,None)] this was double_counting the end section!
             list_of_totals.append(total)
             list_of_section_counts.append(section_count)
     print(f'list_of_totals {list_of_totals} - should be ( 90, 82,  74, 82, 86, 94 )')
@@ -149,7 +148,7 @@ print('total:',total)
 test_dictionary = {
     '2023_Day23_input':
     {'attempts':(None),
-    'low':None,'high':2118,'answer':None},
+    'low':None,'high':2118,'answer':2106},
     '2023_Day23_testinput':
     {'answer':94},
 }
@@ -158,6 +157,10 @@ from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
 2118 - answer too high
-testinput totals are incorrect by either 1 or 2 (too high)
+testinput totals were incorrect by 7 (too high).
+I figured out that the final section length (None,None,None) was getting added more than once.
+After removing double counting of the end section, all answers were too large by 1.
+This seems to be because the very first step of the puzzle is not counted.
+To make up for it, I have simply removed the "section_length += 1" from the last step of each path.
 
 '''

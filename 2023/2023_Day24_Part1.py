@@ -19,7 +19,7 @@ test_dictionary = {
     '2023_Day24_input':
     {'attempts':(None),
     'low':None,'high':None,'answer':None},
-    '2023_Day23_testinput':
+    '2023_Day24_testinput':
     {'answer':2},
 }
 
