@@ -119,26 +119,28 @@ To decide whether a path should be added to the queue, any 'directions' characte
 def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
     first_section_end_state = start_end_mapping[initial_state]
     running_total = section_lengths[first_section_end_state]
-    states_explored = [(first_section_end_state)]
-    paths_to_explore = [(first_section_end_state, running_total, states_explored)]
+    end_states_explored = [(first_section_end_state)]
+    paths_to_explore = [(initial_state, first_section_end_state, running_total, end_states_explored)]
     list_of_totals = []
     while paths_to_explore:
         current_path = paths_to_explore.pop(0)
-        v, h, direction = current_path[0]
-        current_total = current_path[1]
-        states_explored = current_path[2]
-        opposite_direction = opposite_directions[direction]
-        states_explored.append((v,h,opposite_direction))
-        if v is not None and h is not None:
+        start_v, start_h, start_direction = current_path[0]
+        end_v, end_h, end_direction = current_path[1]
+        current_total = current_path[2]
+        end_states_explored = current_path[3]
+        opposite_direction = opposite_directions[start_direction]
+        end_states_explored.append((start_v,start_h,opposite_direction))
+        if end_v is not None and end_h is not None:
             for new_direction,(ndv,ndh) in directions.items():
-                dv,dh = directions[direction]
+                dv,dh = directions[end_direction]
                 if (dv,dh) == (-ndv,-ndh):
-                    'continue'
-                next_start_state = (v, h, new_direction)
-                if next_start_state in start_end_mapping and next_end_state not in states_explored:
+                    continue
+                next_start_state = (end_v, end_h, new_direction)
+                if next_start_state in start_end_mapping:
                     next_end_state = start_end_mapping[next_start_state]
-                    states_explored.append(next_end_state)
-                    paths_to_explore.append((next_end_state,current_total + section_lengths[next_end_state],states_explored))
+                    if next_end_state not in end_states_explored:
+                        end_states_explored.append(next_end_state)
+                        paths_to_explore.append((next_start_state,next_end_state,current_total + section_lengths[next_end_state],end_states_explored))
         else:
             total = current_total
             list_of_totals.append(total)
