@@ -80,9 +80,7 @@ def explore_all_sections(input_list):
     while queue:
         start_state = queue.pop(0)
         end_state,section_length = explore_section(start_state)
-        if end_state in section_lengths:
-            print('end state dupicate encountered - check this!')
-        else:
+        if not end_state in section_lengths:
             section_lengths[end_state] = section_length
             start_end_mapping[start_state] = end_state
         v,h,direction = end_state[0],end_state[1],end_state[2]
@@ -107,7 +105,7 @@ def explore_all_sections(input_list):
 
 section_lengths, start_end_mapping = explore_all_sections(input_list)
 for section,length in section_lengths.items():
-    print('section end: ',section,'length',length) # central lengths seem off by one?
+    print('section end: ',section,'length',length)
 
 def find_longest_path_length(section_lengths, start_end_mapping):
     first_section_end_state = start_end_mapping[(start_v,start_h,start_direction)]
@@ -127,12 +125,12 @@ def find_longest_path_length(section_lengths, start_end_mapping):
                 if (dv,dh) == (-ndv,-ndh):
                     'continue'
                 next_status = (v, h, new_direction)
-                if next_status in start_end_mapping: # is this necessary?
+                if next_status in start_end_mapping:
                     next_end_status = start_end_mapping[next_status]
                     section_count += 1
                     paths_to_explore.append((next_end_status,current_total + section_lengths[next_end_status],section_count))
         else:
-            total = current_total # + section_lengths[(None,None,None)] this was double_counting the end section!
+            total = current_total
             list_of_totals.append(total)
             list_of_section_counts.append(section_count)
     print(f'list_of_totals {list_of_totals} - should be ( 90, 82,  74, 82, 86, 94 )')
@@ -156,11 +154,9 @@ test_dictionary = {
 from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
-2118 - answer too high
 testinput totals were incorrect by 7 (too high).
 I figured out that the final section length (None,None,None) was getting added more than once.
 After removing double counting of the end section, all answers were too large by 1.
-This seems to be because the very first step of the puzzle is not counted.
-To make up for it, I have simply removed the "section_length += 1" from the last step of each path.
+To make up for it, I have simply removed the "section_length += 1" from the last step of each path and this now works fine.
 
 '''

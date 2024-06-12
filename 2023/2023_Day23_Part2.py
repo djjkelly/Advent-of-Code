@@ -99,15 +99,15 @@ def explore_all_sections(input_list,initial_state):
             new_character = input_list[new_v][new_h]
             if new_character == '#':
                 continue
-            if new_character in directions: # changed this to explore all unexplored directions
-                new_state = (end_v,end_h,new_direction) # changed new_character to new_direction - no longer following character directions
+            if new_character in directions:
+                new_state = (end_v,end_h,new_direction)
                 if new_state not in queue:
                     queue.append(new_state)
     return section_lengths, start_end_mapping
 initial_state = (initial_v,initial_h,initial_direction)
 section_lengths, start_end_mapping = explore_all_sections(input_list,initial_state)
 for section,length in section_lengths.items():
-    print('section end: ',section,'length',length) # central lengths seem off by one?
+    print('section end: ',section,'length',length) # these print statements look correct to me!
 
 '''
 Now that we can travel in any direction along a section, I need to record whether the path has already been taken.
@@ -119,7 +119,7 @@ To decide whether a path should be added to the queue, any 'directions' characte
 def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
     first_section_end_state = start_end_mapping[initial_state]
     running_total = section_lengths[first_section_end_state]
-    states_explored = set((initial_state,))
+    states_explored = [(first_section_end_state)]
     paths_to_explore = [(first_section_end_state, running_total, states_explored)]
     list_of_totals = []
     while paths_to_explore:
@@ -128,23 +128,19 @@ def find_longest_path_length(section_lengths, start_end_mapping, initial_state):
         current_total = current_path[1]
         states_explored = current_path[2]
         opposite_direction = opposite_directions[direction]
-        states_explored.add((v,h,opposite_direction))
+        states_explored.append((v,h,opposite_direction))
         if v is not None and h is not None:
-            directions_checked_count = 0
             for new_direction,(ndv,ndh) in directions.items():
-                directions_checked_count += 1
-                if directions_checked_count == 5:
-                    break
                 dv,dh = directions[direction]
                 if (dv,dh) == (-ndv,-ndh):
                     'continue'
                 next_start_state = (v, h, new_direction)
-                if next_start_state in start_end_mapping and next_start_state not in states_explored: # changed to depend on states_explored
+                if next_start_state in start_end_mapping and next_end_state not in states_explored:
                     next_end_state = start_end_mapping[next_start_state]
-                    states_explored.add(next_start_state)
+                    states_explored.append(next_end_state)
                     paths_to_explore.append((next_end_state,current_total + section_lengths[next_end_state],states_explored))
         else:
-            total = current_total # + section_lengths[(None,None,None)] this was double_counting the end section!
+            total = current_total
             list_of_totals.append(total)
     print(f'list_of_totals {list_of_totals}')
     max_total = 0
