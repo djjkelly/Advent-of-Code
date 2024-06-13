@@ -180,5 +180,6 @@ The longest path in the testinput goes:
 
 highest value achieved so far:
 3614
+3758 - too low
 
 '''
