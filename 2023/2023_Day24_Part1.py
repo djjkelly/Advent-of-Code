@@ -2,7 +2,7 @@
 #https://adventofcode.com/2023/day/24
 
 folder = '2023/'
-filename = '2023_Day24_testinput'
+filename = '2023_Day24_input'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -31,41 +31,51 @@ y = py + (t * vy)
 let's call the intersect points ix and iy
 ix = px + (t * vx)
 iy = py + (t * vy)
-rearranging the x equation...
-t = ( ix - px ) / vx
-this applies for 1 and 2. combining...
-( ix - px1 ) / vx1 = ( ix - px2 )/ vx2
+for path 1 and path 2 the lines are...      note that t is not the same, as the paths may cross at different times.
+ix1 = px1 + (t1 * vx1)                                              iy1 = py1 + (t1 * vy1)
+ix2 = px2 + (t2 * vx2)                                              iy2 = py2 + (t2 * vy2)
+equating ix1 = ix2...                       intersect is the same for both lines
+px1 + ( t1 * vx1 ) = px2 + ( t2 * vx2 )                             py1 + ( t1 * vy1 ) = py2 + ( t2 * vy2 )
+( t1 * vx1 ) = px2 + ( t2 * vx2 ) -  px1                            ( t1 * vy1 ) = py2 + ( t2 * vy2 ) -  py1
+t1 = ( px2 + ( t2 * vx2 ) -  px1 ) / vx1                            t1 = ( py2 + ( t2 * vy2 ) -  py1 ) / vy1
+substituting t1 into the formula for ix1...                         and iy1...
+ix1 = px1 + ( ( ( px2 + ( t2 * vx2 ) -  px1 ) / vx1) * vx1 )        iy1 = py1 + ( ( ( py2 + ( t2 * vy2 ) -  py1 ) / vy1) * vy1 )
+ix1 = px1 + px2 + ( t2 * vx2 ) -  px1                               iy1 = py1 + py2 + ( t2 * vy2 ) -  py1
+ix1 = px2 + ( t2 * vx2 )                                            iy1 = py2 + ( t2 * vy2 )
+t2 formulae will be...
+t2 = ( px1 + ( t1 * vx1 ) -  px2 ) / vx2                            t2 = ( py1 + ( t1 * vy1 ) -  py2 ) / vy2
+substituting t2 into the formula for ix2...                         and iy2...
+ix2 = px2 + ( ( ( px1 + ( t1 * vx1 ) -  px2) / vx2 ) * vx2 )        iy2 = py2 + ( ( (py1 + ( t1 * vy1 ) -  py2 ) / vy2 ) * vy2 )
+ix2 = px2 + px1 + ( t1 * vx1 ) - px2                                iy2 = py2 + py1 + ( t1 * vy1 ) - py2
+ix2 = px1 + ( t1 * vx1 )                                            iy2 = py1 + ( t1 * vy1 )
+set ix1 = ix2 and iy1 = iy2...
+px2 + ( t2 * vx2 ) = px1 + ( t1 * vx1 )                             py1 + ( t1 * vy1 ) = py2 + ( t2 * vy2 )
+( t2 * vx2 ) = px1 + ( t1 * vx1 ) - px2                             ( t1 * vy1 ) = py2 + ( t2 * vy2 ) - py1
+t2 = ( px1 + ( t1 * vx1 ) - px2 ) / vx2                             t1 = ( py2 + ( t2 * vy2 ) - py1 ) / vy1
+combining...
+t2 = ( px1 + ( ( ( py2 + ( t2 * vy2 ) - py1 ) / vy1 ) * vx1 ) - px2 ) / vx2                     checked to here, this seems correct
+multiply both sides by vx2...
+( t2 * vx2 ) = px1 + ( ( ( py2 + ( t2 * vy2 ) - py1 ) / vy1 ) * vx1 ) - px2
 rearranging...
-( ix - px1 ) * vx2 = ( ix - px2 ) * vx1
+( t2 * vx2 ) = px1 - px2 + ( ( py2 + ( t2 * vy2 ) - py1 ) * vx1 ) ) / vy1
+multiply both sides by vy1...
+( t2 * vx2 * vy1 ) = ( px1 * vy1 ) - ( px2 * vy1 ) + ( ( py2 + ( t2 * vy2 ) - py1 ) * vx1 ) )
+multiply out...
+( t2 * vx2 * vy1 ) = ( px1 * vy1 ) - ( px2 * vy1 ) + ( py2 * vx1 ) + ( ( t2 * vy2 ) * vx1 ) - ( py1 * vx1 )
+rearranging...
+( t2 * vx2 * vy1 ) = ( px1 * vy1 ) - ( px2 * vy1 ) - ( py2 * vx1 ) + ( py1 * vx1 ) + ( t2 * vy2 * vx1 )
+( t2 * vx2 * vy1 ) - ( t2 * vy2 * vx1 ) = ( px1 * vy1 ) - ( px2 * vy1 ) + ( py2 * vx1 ) - ( py1 * vx1 )
+factorise...
+t2 * ( ( vx2 * vy1 ) - ( vy2 * vx1 ) ) = ( px1 * vy1 ) - ( px2 * vy1 ) + ( py2 * vx1 ) - ( py1 * vx1 )
+rearrange...
+t2 = ( ( px1 * vy1 ) - ( px2 * vy1 ) + ( py2 * vx1 ) - ( py1 * vx1 ) ) / ( ( vx2 * vy1 ) - ( vy2 * vx1 ) )
 
-rearranging...
-( ix - px1 ) / ( ix - px2 ) = vx1 / vx2
-similarly for y...
-( iy - py1 ) / ( iy - py2 ) = vy1 / vy2
-let...
-    dvx = vx1 / vx2
-    dvy = vy1 / vy2
-input dvx, dvy...
-( ix - px1 ) / ( ix - px2 ) = dvx
-( iy - py1 ) / ( iy - py2 ) = dvy
-rearranging...
-( ix - px1 ) = dvx * ( ix - px2 )
-( iy - py1 ) = dvy * ( iy - py2 )
-expanding...
-ix - px1 = ( dvx * ix ) - ( dvx * px2 )
-iy - py1 = ( dvy * iy ) - ( dvy * py2 )
-rearranging...
-ix = ( dvx * ix ) - ( dvx * px2 ) - px1
-iy = ( dvy * iy ) - ( dvy * py2 ) - py1
-rearranging...
-( dvx * ix ) - ix = ( dvx * px2 ) + px1
-( dvy * iy ) - iy = ( dvy * py2 ) + py1
-expanding...
-ix * ( dvx - 1 ) = ( dvx * px2 ) + px1
-iy * ( dvy - 1 ) = ( dvy * py2 ) + py1
-rearranging...
-ix  = (( dvx * px2 ) + px1 ) / ( dvx - 1 )
-iy  = (( dvy * py2 ) + py1 ) / ( dvy - 1 )
+to calculate t1...
+ix1 = px1 + (t1 * vx1)
+ix1 - px1 = t1 * vx1
+t1 = ( ix1 - px1 ) / vx1
+t1 = ( ix - px1 ) / vx1
+
 
 '''
 def count_intersections(positions_list,velocities_list):
@@ -82,13 +92,16 @@ def count_intersections(positions_list,velocities_list):
             if g1 == g2:
                 print('lines parralel, skipping this comparison')
                 continue # not added to count
-            dvx = vx1 / vx2 # = ( ix - px1 ) / ( ix - px2 )
-            dvy = vy1 / vy2 # = ( iy - py1 ) / ( iy - py2 )
-            print('dvx:',dvx,' dvy:',dvy)
-            ix  = (( dvx * px2 ) + px1 ) / ( dvx - 1 )
-            iy  = (( dvy * py2 ) + py1 ) / ( dvy - 1 )
-            if 7 <= ix <= 27 and 7 <= iy <= 27:
-                intersections_count +=1
+            t2 = ( ( px1 * vy1 ) - ( px2 * vy1 ) + ( py2 * vx1 ) - ( py1 * vx1 ) ) / ( ( vx2 * vy1 ) - ( vy2 * vx1 ) )
+            ix = px2 + (t2 * vx2)
+            iy = py2 + (t2 * vy2)
+            t1 = ( ix - px1 ) / vx1
+            ti = min(t1,t2) # time at first intersection
+            if 200000000000000 <= ix <= 400000000000000 and 200000000000000 <= iy <= 400000000000000:
+                if ti > 0:
+                    intersections_count +=1
+                else:
+                    print('happened in the past!')
             else:
                 print('outside grid!')
     return intersections_count
@@ -99,7 +112,7 @@ print('total:',total)
 test_dictionary = {
     '2023_Day24_input':
     {'attempts':(None),
-    'low':None,'high':None,'answer':None},
+    'low':None,'high':None,'answer':19523},
     '2023_Day24_testinput':
     {'answer':2},
 }
