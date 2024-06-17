@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/25
 
+from random import randint
+
 folder = '2023/'
-filename = '2023_Day25_input'
+filename = '2023_Day25_testinput'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -40,7 +42,8 @@ for line in file_content:
             components_list.append(component_name)
         if linked_component_name not in components_list:
             components_list.append(linked_component_name)
-print('length of components list: ', len(components_list))
+components_list_length = len(components_list)
+print('length of components list: ', components_list_length)
 
 for index,component_name in enumerate(components_list):
     count = len(connections[component_name])
@@ -62,19 +65,23 @@ print_range = 10
 for i in range(print_range):
     print(f'printing element {i} of wires_list: {wires_list[i]}.')
 
-def generate_combinations(data):
-    n = len(data) // 2 # if the calculation is taking too long we can maybe get away with shortening the list
-    list = []
-    for i in range(n):
-        for j in range(i+1, n):
-            for k in range(j+1, n):
-                list.append((data[i], data[j], data[k]))
-    return list
-combination_list = generate_combinations(wires_list)
-print('length of combinations list: ',len(combination_list))
-
-for i in range(print_range):
-    print(f'element {i} of combinations: {combination_list[i]}')
+# connections = {}, input_dict = {}, components_list = []
+def test_probe(cycle_number):
+    frequency_analysis = {}
+    list_position = 0
+    component_name = components_list[list_position][0]
+    for i in range(cycle_number):
+        # add component count in frequency analysis
+        if component_name in frequency_analysis:
+            frequency_analysis[component_name] += 1
+        else:
+            frequency_analysis[component_name] = 1
+        options_length = len(connections[component_name])
+        random_int = randint(0, options_length - 1)
+        component_name = connections[component_name][random_int]
+    return frequency_analysis
+cycle_number = 500000
+frequency_analysis = test_probe(cycle_number)
 
 
 # need to find "THE" 3 wires which can be disconnected to separate the components into 2 separate groups
