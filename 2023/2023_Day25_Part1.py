@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/25
 
-from random import randint
+from random import randint, choice
 
 folder = '2023/'
-filename = '2023_Day25_testinput'
+filename = '2023_Day25_input'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -51,38 +51,67 @@ for index,component_name in enumerate(components_list):
 components_list = sorted(components_list, key=lambda x: x[1], reverse=True)
 '''
 There are 15 components in the test data. Number of wires is 105
-There are 1458 components in the real data. Number of wires is 1062153 (1,062,153)
+There are 1458 components in the real data. Number of possible wires is 1062153 (1,062,153)
 '''
 wires_list = []
 for index, (component_1,count1) in enumerate(components_list):
     for index, (component_2,count2) in enumerate(components_list[index + 1:]):
-        wires_list.append(((component_1, component_2),count1 + count2))
+        if component_2 in connections[component_1] or component_1 in connections[component_2]:
+            wires_list.append(([component_1, component_2],count1 + count2))
 wires_list_length = len(wires_list)
 print('length of wires list: ', wires_list_length)
 wires_list = sorted(wires_list, key=lambda x: x[1], reverse=True)
+
+wires_list = [tuple(sublist[0]) for sublist in wires_list]
 
 print_range = 10
 for i in range(print_range):
     print(f'printing element {i} of wires_list: {wires_list[i]}.')
 
 # connections = {}, input_dict = {}, components_list = []
-def test_probe(cycle_number):
+def test_probe_component(cycle_number,removed_wires):
     frequency_analysis = {}
-    list_position = 0
-    component_name = components_list[list_position][0]
+    component_name = components_list[0][0]
     for i in range(cycle_number):
         # add component count in frequency analysis
         if component_name in frequency_analysis:
             frequency_analysis[component_name] += 1
         else:
             frequency_analysis[component_name] = 1
-        options_length = len(connections[component_name])
-        random_int = randint(0, options_length - 1)
-        component_name = connections[component_name][random_int]
+        component_name = choice(connections[component_name]) # random choice
     return frequency_analysis
-cycle_number = 500000
-frequency_analysis = test_probe(cycle_number)
 
+# this version considers wires rather than individual components
+def test_probe_wire(cycle_number,removed_wires):
+    frequency_analysis = {}
+    wire_name = wires_list[1] # this is an arbitrary starting point
+    for i in range(cycle_number):
+        component_name_0 = wire_name[0]
+        component_name_1 = wire_name[1]
+        # add component count in frequency analysis
+        if wire_name in frequency_analysis:
+            frequency_analysis[wire_name] += 1
+        elif (wire_name[1],wire_name[0]) in frequency_analysis:
+            frequency_analysis[wire_name[1],wire_name[0]] += 1
+        else:
+            frequency_analysis[wire_name] = 1
+        component_name_0 = component_name_1
+        component_name_1 = choice(connections[component_name_1])
+        wire_name = (component_name_0,component_name_1)
+    return frequency_analysis
+cycle_number = 1000000
+removed_wires = (('hfx','pzl'),('bvb','cmg'),('nvd','jqt'))
+frequency_analysis = test_probe_wire(cycle_number,removed_wires)
+len_frequency_analysis = len(frequency_analysis)
+print(len_frequency_analysis)
+
+def is_network_split():
+    test_cycles = 6000
+    test_dictionary = test_probe_component(test_cycles)
+    for component in components_list:
+        if component not in test_dictionary:
+            return True
+    return False
 
 # need to find "THE" 3 wires which can be disconnected to separate the components into 2 separate groups
 def solve():
