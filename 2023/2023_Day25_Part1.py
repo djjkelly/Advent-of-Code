@@ -30,8 +30,6 @@ def prepare_data(file_content):
         linked_components = line.split(':')[1]
         linked_components = consistent_split(linked_components)
         input_dict[component_name] = linked_components
-        #print('component_name',component_name)
-        #print('linked_components', linked_components)
         if component_name in connections:
             connections[component_name].extend(linked_components)
         else:
@@ -67,8 +65,6 @@ def prepare_data(file_content):
     wires_list = sorted(wires_list, key=lambda x: x[1], reverse=True)
 
     wires_list = [tuple(sublist[0]) for sublist in wires_list]
-    #for wire in wires_list:
-        #print(wire)
     return connections, input_dict, components_list, wires_list
 connections ,input_dict , components_list , wires_list = prepare_data(file_content)
 
@@ -76,11 +72,8 @@ def process_graph(components_list,wires_list):
     Graph = nx.Graph()
     components_list = [sublist[0] for sublist in components_list]
     Graph.add_nodes_from(components_list)
-    Graph.add_edges_from(wires_list)
+    Graph.add_edges_from((u,v, {'capacity':1}) for u,v in wires_list)
     partition = community.best_partition(Graph)
-    print(partition)
-    inter_community_edges = []
-
     community_numbers_counts = {}
     for node,community_no in partition.items():
         if community_no not in community_numbers_counts:
@@ -88,32 +81,19 @@ def process_graph(components_list,wires_list):
         else:
             community_numbers_counts[community_no] += 1
     print(community_numbers_counts)
+    print('sum',sum(community_numbers_counts.values()))
     for (u, v) in Graph.edges():
         if partition[u] != partition[v]:
-            inter_community_edges.append((u, v))
-        
-
-    print("Edges to remove to separate the communities:", inter_community_edges)
-
-
-    new_partition = community.best_partition(Graph)
-    print(new_partition)
-    target_community = mode(new_partition.values())
-    count1,count2 = 0,0
-    for node, community_no in new_partition.items():
-        if community_no == target_community:
-            count1+=1
-        elif isinstance(node,str):
-            count2+=1
-    print('count1:',count1,'count2:',count2)
-    total = count1 * count2
-    return total
-total = process_graph(components_list,wires_list)
+            number_of_cuts, (community1,community2)  = nx.minimum_cut(Graph,u,v)
+            if number_of_cuts == 3:
+                return len(community1), len(community2)
+group_size_1,group_size_2 = process_graph(components_list,wires_list)
+total = group_size_2 * group_size_1
 print('total:',total)
 test_dictionary = {
     '2023_Day25_input':
     {'attempts':(356717,),
-    'low':356717,'high':None,'answer':None},
+    'low':356717,'high':None,'answer':531437},
     '2023_Day25_testinput':
     {'answer':54},
 }
@@ -122,7 +102,5 @@ from testmodule import test_function
 test_function(test_dictionary,filename,total)
 '''
 Correct answer obtained for testinput.
-356717 is not the right answer
-This gives a different answer each time.
-
+The best_partition function gives a different result every time.
 '''
