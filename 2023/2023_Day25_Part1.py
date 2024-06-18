@@ -4,7 +4,7 @@
 from random import randint, choice
 
 folder = '2023/'
-filename = '2023_Day25_input'
+filename = '2023_Day25_testinput'
 extension = '.txt'
 full_path = folder + filename + extension
 with open(full_path,'r') as file_object:
@@ -64,23 +64,7 @@ wires_list = sorted(wires_list, key=lambda x: x[1], reverse=True)
 
 wires_list = [tuple(sublist[0]) for sublist in wires_list]
 
-print_range = 10
-for i in range(print_range):
-    print(f'printing element {i} of wires_list: {wires_list[i]}.')
-
 # connections = {}, input_dict = {}, components_list = []
-def test_probe_component(cycle_number,removed_wires):
-    frequency_analysis = {}
-    component_name = components_list[0][0]
-    for i in range(cycle_number):
-        # add component count in frequency analysis
-        if component_name in frequency_analysis:
-            frequency_analysis[component_name] += 1
-        else:
-            frequency_analysis[component_name] = 1
-        component_name = choice(connections[component_name]) # random choice
-    return frequency_analysis
-
 # this version considers wires rather than individual components
 def test_probe_wire(cycle_number,removed_wires):
     frequency_analysis = {}
@@ -95,35 +79,49 @@ def test_probe_wire(cycle_number,removed_wires):
             frequency_analysis[wire_name[1],wire_name[0]] += 1
         else:
             frequency_analysis[wire_name] = 1
+        valid_selection = False
         component_name_0 = component_name_1
-        component_name_1 = choice(connections[component_name_1])
+        while not valid_selection:
+            component_name_1 = choice(connections[component_name_0])
+            if (component_name_0,component_name_1) not in removed_wires and (component_name_1,component_name_0) not in removed_wires:
+                valid_selection = True
         wire_name = (component_name_0,component_name_1)
     return frequency_analysis
 cycle_number = 1000000
-removed_wires = (('hfx','pzl'),('bvb','cmg'),('nvd','jqt'))
+removed_wires = ((None,None),(None,None),(None,None))
 frequency_analysis = test_probe_wire(cycle_number,removed_wires)
 len_frequency_analysis = len(frequency_analysis)
 print(len_frequency_analysis)
 
-def is_network_split():
-    test_cycles = 6000
-    test_dictionary = test_probe_component(test_cycles)
-    for component in components_list:
-        if component not in test_dictionary:
+def is_network_split(removed_wires):
+    test_cycles = 10000
+    test_dictionary = test_probe_wire(test_cycles,removed_wires)
+    for wire in wires_list:
+        if wire not in test_dictionary and (wire[1],wire[0]) not in test_dictionary and wire not in removed_wires:
             return True
     return False
+removed_wires = (('hfx','pzl'),('bvb','cmg'),('nvd','jqt'))
+#print(is_network_split(removed_wires))
+
+def incremental_combinations(data):
+    n = len(data)
+    for i in range(n - 2):
+        for j in range(i + 1, n - 1):
+            for k in range(j + 1, n):
+                yield (data[i], data[j], data[k])
 
 # need to find "THE" 3 wires which can be disconnected to separate the components into 2 separate groups
 def solve():
+    generator = incremental_combinations(wires_list)
+    count = 0
+    for combination in generator:
+        count += 1
+        answer_found = is_network_split(combination)
+        if answer_found:
+            print('Answer found!: ',combination)
+            print(count) # should be less than 35937 which is the number of combinations for testinput
     answer = 1
     return answer
-'''
-I could develop a function which will return 1 for the original data
-...but will return 2 when the 3 wires in the example are 'cut'.
-This could work by randomly testing two components to see if they are connected or not.
-There should be a 1 in 2 chance that they are connected, so testing 20 point pairs should give a 1 in 1048576 chance of false negative.
-
-'''
 
 total = solve()
 print('total:',total)
