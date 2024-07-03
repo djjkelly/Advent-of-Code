@@ -2,7 +2,12 @@
 #https://adventofcode.com/2023/day/8
 import math
 
-with open("2023/2023_Day8_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day8_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 instructions = ''
@@ -52,3 +57,10 @@ print('Final count: ',final_count)
 23977527174353 = correct answer
 
 '''
+test_dictionary = {
+    '2023_Day8_input':
+    {'answer':23977527174353},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,final_count)

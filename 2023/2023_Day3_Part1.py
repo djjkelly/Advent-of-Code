@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/3
 
+folder = '2023/'
+filename = '2023_Day3_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
 try:
-    with open("2023/2023_Day3_input.txt") as file_object:
+    with open(full_path) as file_object:
         file_content = file_object.readlines()
 except FileNotFoundError:
     print("File not found")
@@ -84,3 +89,10 @@ Line 3: 377 + 783 + 9 + 855 + 940 + 463 + 844 + 679 = 4950
 
 """
 print(total)
+test_dictionary = {
+    '2023_Day3_input':
+    {'answer':550934},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

@@ -3,7 +3,12 @@
 
 import re
 
-with open("2023/2023_Day15_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day15_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 
 file_list = file_content[0].strip().split(',')
@@ -70,3 +75,10 @@ If not it goes to the 'back' of all the existing lenses (last index + 1).
 Only one copy of a given label can exist in a given box.
 Each label will always evaluate to the same box (HASH works the same time each time)
 '''
+test_dictionary = {
+    '2023_Day15_input':
+    {'answer':210906},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_focusing_power)

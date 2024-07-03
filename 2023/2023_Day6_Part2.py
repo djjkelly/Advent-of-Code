@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/6
 
-with open("2023/2023_Day6_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day6_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 time_input = ''.join(file_content[0].split(': ')[1].split())
@@ -21,3 +26,10 @@ for speed in range(race_time+1):
     if distance > distance_record:
         ways_to_win += 1
 print("ways to win :", ways_to_win) # correct answer found - 36872656. this is quite a slow method which takes about 15 seconds on my computer.
+test_dictionary = {
+    '2023_Day6_input':
+    {'answer':36872656},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,ways_to_win)

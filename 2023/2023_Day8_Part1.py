@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/8
 
-with open("2023/2023_Day8_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day8_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 instructions = ''
@@ -42,3 +47,10 @@ print(final_count)
 '''
 21797 is the correct answer.
 '''
+test_dictionary = {
+    '2023_Day8_input':
+    {'answer':21797},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,final_count)

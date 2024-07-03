@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/18
 
-with open("2023/2023_Day18_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day18_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 down,right = 0,0 #starting position
 digger_nodes = []
@@ -127,3 +132,10 @@ testinput correct.
 input correct too! Answer is 46359
 
 '''
+test_dictionary = {
+    '2023_Day18_input':
+    {'answer':46359},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_count)

@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/11
 
-with open("2023/2023_Day11_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day11_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 array = []
@@ -66,3 +71,10 @@ print('total_length: ',total_length)
 test should be 1030 for an expansion factor of 10 (currently 1112 - 82 off)
 test should be 8410 for an expansion factor of 100 (currently 8492 - 82 off)
 '''
+test_dictionary = {
+    '2023_Day11_input':
+    {'answer':707505470642},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_length)

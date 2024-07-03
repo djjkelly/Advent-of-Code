@@ -3,7 +3,12 @@
 
 import hashlib
 
-with open("2023/2023_Day14_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day14_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 content_list = []
 for line in file_content:
@@ -75,9 +80,17 @@ def count_total(list_of_strings):
             if char == 'O':
                 total += (length - line_no)
     return total
-print(f'test of count_total. Should be 64 for test content : {count_total(content_list)}')
+total = count_total(content_list)
+print(f'test of count_total. Should be 64 for test content : {total}')
 
 '''
 testinput should have a total load of 64
 Correct answer is 98894
 '''
+test_dictionary = {
+    '2023_Day14_input':
+    {'answer':98894},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

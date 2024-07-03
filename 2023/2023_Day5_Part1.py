@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/5
 
+folder = '2023/'
+filename = '2023_Day5_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
 import re
 try:
-    with open("2023/2023_Day5_input.txt") as file_object:
+    with open(full_path) as file_object:
         file_content = file_object.readlines()
 
     data_dict = {}
@@ -70,3 +75,11 @@ except FileNotFoundError:
     print("Current working directory: ", current_directory, "\nCWD contains the following files or folders: ", ls)
 except Exception as e:
     print(f"An error was encountered: {e}")
+
+test_dictionary = {
+    '2023_Day5_input':
+    {'answer':318728750},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,minimum_location_number)

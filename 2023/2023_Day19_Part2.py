@@ -3,7 +3,12 @@
 
 import copy
 
-with open("2023/2023_Day19_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day19_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
     before_line_break = True
     workflows = {}
@@ -87,3 +92,10 @@ The current_path and new_path should both be overwritten when the variable is re
 It seems that the testinput and real input have been generated such that the check_number never falls outside the range.
 
 '''
+test_dictionary = {
+    '2023_Day19_input':
+    {'answer':125744206494820},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

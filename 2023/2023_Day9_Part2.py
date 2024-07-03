@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/9
 
-with open("2023/2023_Day9_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day9_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 test_content = ['0 3 6 9 12 15','1 3 6 10 15 21','10 13 16 21 30 45']
@@ -50,3 +55,10 @@ print(f'Final answer: total values = {total_values}')
 21544 - incorrect, answer too high
 1208 - answer correct. Predicted value should now be (value_right - value_below, as opposed to value_left + value_below)
 '''
+test_dictionary = {
+    '2023_Day9_input':
+    {'answer':1208},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_values)

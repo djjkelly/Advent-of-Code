@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/17
 
-filename = "2023/2023_Day17_input.txt"
+folder = '2023/'
+filename = '2023_Day17_input'
+extension = '.txt'
+full_path = folder + filename + extension
 
 from testmodule import test_function
 
-with open(filename,'r') as file_object:
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 input_list = []
 for line in file_content:

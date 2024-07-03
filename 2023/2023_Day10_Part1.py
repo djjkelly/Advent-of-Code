@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/10
 
-with open("2023/2023_Day10_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day10_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 test1_content = ['.....','.S-7.','.|.|.','.L-J.','.....']
@@ -112,3 +117,10 @@ I need to make sure the loop doesn't start counting in the direction it came - I
 Correct answer obtained for for test1 data. Error discovered for test2 data. Need a new rule to exclude parts which aren't part of the loop.
 6951 - correct answer found for part1.
 '''
+test_dictionary = {
+    '2023_Day10_input':
+    {'answer':6951},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,farthest_distance)

@@ -3,9 +3,14 @@
 
 import re
 
+folder = '2023/'
+filename = '2023_Day2_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
 total = 0 # the "total" variable counts the sum of the game numbers which is able to
 try:
-    with open("2023/2023_Day2_input.txt") as file_object:
+    with open(full_path) as file_object:
         file_content = file_object.readlines()
 except FileNotFoundError:
     print("File not found")
@@ -38,3 +43,14 @@ for game_number,line in enumerate(file_content,start=1):
     total += game_power
     print("Game power for game " + str(game_number) + " is " + str(game_power))
 print(total)
+
+'''
+My answer was 79315
+'''
+test_dictionary = {
+    '2023_Day2_input':
+    {'answer':79315},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

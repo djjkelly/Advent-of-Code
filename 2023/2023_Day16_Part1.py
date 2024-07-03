@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/16
 
-with open("2023/2023_Day16_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day16_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 input_list=[]
 energisation_map = []
@@ -126,3 +131,10 @@ Test input calculating correctly.
 
 Correct answer obtained = 8034
 '''
+test_dictionary = {
+    '2023_Day16_input':
+    {'answer':8034},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,energised_tiles_no)

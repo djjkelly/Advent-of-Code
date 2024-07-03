@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/14
 
-with open("2023/2023_Day14_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day14_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 content_list = []
 for line in file_content:
@@ -39,9 +44,17 @@ def count_total(list_of_strings):
             if char == 'O':
                 total += (length - line_no)
     return total
-print(f'test of count_total. Should be 136 for test content : {count_total(processed_content)}')
+total = count_total(processed_content)
+print(f'test of count_total. Should be 136 for test content : {total}')
 
 '''
 testinput should have a total load of 136
 Correct answer obtained = 112773
 '''
+test_dictionary = {
+    '2023_Day14_input':
+    {'answer':112773},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

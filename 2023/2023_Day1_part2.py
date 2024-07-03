@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # https://adventofcode.com/2023/day/1
+
+folder = '2023/'
+filename = '2023_Day1_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
 num_dict = {
     'one':'1',
     'two':'2',
@@ -12,7 +18,7 @@ num_dict = {
     'nine':'9',
     }
 
-with open("2023/2023_Day1_input.txt") as file:
+with open(full_path) as file:
     total = 0
     for line in file:
         print(line.strip())
@@ -88,3 +94,13 @@ with open("2023/2023_Day1_input.txt") as file:
         print(subtotal + '\n')
         total += int(subtotal)
 print (total)
+'''
+54875 is my answer
+'''
+test_dictionary = {
+    '2023_Day1_input':
+    {'answer':54875},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

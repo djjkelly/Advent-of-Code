@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/19
 
-with open("2023/2023_Day19_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day19_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
     before_line_break = True
     workflows = {}
@@ -94,3 +99,10 @@ correct testinput obtained
 correct answer obtained for Part1: 325952
 
 '''
+test_dictionary = {
+    '2023_Day19_input':
+    {'answer':325952},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

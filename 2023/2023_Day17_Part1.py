@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/17
 
-with open("2023/2023_Day17_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day17_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 input_list = []
 for line in file_content:
@@ -55,3 +60,10 @@ Correct answer obtained for testinput = 102
 incorrect answer obtained: minimum_heat_loss of 849 - answer too high
 Correct answer is 845
 '''
+test_dictionary = {
+    '2023_Day17_input':
+    {'answer':845},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,result)

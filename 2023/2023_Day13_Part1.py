@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/13
 
-with open("2023/2023_Day13_input.txt") as file_object:
+folder = '2023/'
+filename = '2023_Day13_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object:
     file_content = file_object.readlines()
 
 sections = []
@@ -83,3 +88,10 @@ test2_input should give a grand total of 1700
 29843 is not the right answer.
 29846 is the right answer!
 '''
+test_dictionary = {
+    '2023_Day13_input':
+    {'answer':29846},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,grand_total)

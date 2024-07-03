@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/18
 
-with open("2023/2023_Day18_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day18_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 down,right = 0,0 #starting position
 digger_nodes = [(0,0)]
@@ -54,3 +59,10 @@ Except on four corners, where three quarters of the square is outside the polygo
 
 Correct answer obtained: 59574883048274
 '''
+test_dictionary = {
+    '2023_Day18_input':
+    {'answer':59574883048274},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,full_area)

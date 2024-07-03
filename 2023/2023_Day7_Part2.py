@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/7
 
-with open("2023/2023_Day7_input.txt") as file_object: # test_input should give a total_winnings of 6440: done
+folder = '2023/'
+filename = '2023_Day7_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object: # test_input should give a total_winnings of 6440: done
     file_content = file_object.readlines()
 
 # a rank of 1 means the weakest hand
@@ -126,3 +131,10 @@ It is actually giving the ['J3TT3', 540] a higher rank than ['J22KK', 519].
 In other words it is basing it off the 3 being higher than the 2.
 It should actually be looking at the K being higher than the T.
 '''
+test_dictionary = {
+    '2023_Day7_input':
+    {'answer':252113488},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_winnings)

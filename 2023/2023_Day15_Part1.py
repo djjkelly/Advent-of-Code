@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/15
 
-with open("2023/2023_Day15_input.txt",'r') as file_object:
+folder = '2023/'
+filename = '2023_Day15_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path,'r') as file_object:
     file_content = file_object.readlines()
 
 file_list = file_content[0].strip().split(',')
@@ -29,3 +34,10 @@ print(total)
 testinput should have a result of 1320
 Correct answer found: 516657
 '''
+test_dictionary = {
+    '2023_Day15_input':
+    {'answer':516657},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)

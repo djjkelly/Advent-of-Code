@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 #https://adventofcode.com/2023/day/7
 
-with open("2023/2023_Day7_input.txt") as file_object: # test_input should give a total_winnings of 6440: done
+folder = '2023/'
+filename = '2023_Day7_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
+with open(full_path) as file_object: # test_input should give a total_winnings of 6440: done
     file_content = file_object.readlines()
 
 # a rank of 1 means the weakest hand
@@ -89,3 +94,10 @@ I think my program needs to sort them into categories first, and then sort the c
 251610788 answer submitted - wrong answer, too low. I've checked the logic of calling sort_list for other lists.
 251806792 answer correct! - I misunderstood the secondary ranking requirements.
 '''
+test_dictionary = {
+    '2023_Day7_input':
+    {'answer':251806792},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total_winnings)

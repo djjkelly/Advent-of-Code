@@ -2,12 +2,18 @@
 # https://adventofcode.com/2023/day/2
 
 import re
+
+folder = '2023/'
+filename = '2023_Day2_input'
+extension = '.txt'
+full_path = folder + filename + extension
+
 colour_limits = {'green':13,'blue':14,'red':12}
 colour_possible = {'green':True,'blue':True,'Red':True}
 
 total = 0 # the "total" variable counts the sum of the game numbers which is able to
 try:
-    with open("2023/2023_Day2_input.txt") as file_object:
+    with open(full_path) as file_object:
         file_content = file_object.readlines()
 except FileNotFoundError:
     print("File not found")
@@ -45,3 +51,14 @@ for game_number,line in enumerate(file_content,start=1):
     else:
         print("Game " + str(game_number) + " not possible with available cubes")
 print(total)
+
+'''
+My answer was 2085
+'''
+test_dictionary = {
+    '2023_Day2_input':
+    {'answer':2085},
+}
+
+from testmodule import test_function
+test_function(test_dictionary,filename,total)
