@@ -65,11 +65,11 @@ for count1 in range(1,count+1):
     for count2 in range(count1,count+1):
         if count2 == count1:
             continue
-        print('count1: ',count1,'count2: ',count2)
+        #print('count1: ',count1,'count2: ',count2)
         x1,y1,x2,y2 = pos_dict[count1][1],pos_dict[count1][0],pos_dict[count2][1],pos_dict[count2][0]
         diff_x,diff_y = abs(x1 - x2),abs(y1 - y2)
         length = diff_x + diff_y
-        print(length)
+        #print(length)
         total_length += length
 print(total_length)
 '''

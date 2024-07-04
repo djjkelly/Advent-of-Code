@@ -119,7 +119,7 @@ def translate_continuous_ranges(initial_input_range,key):
             continue
         # If the range is not continuous, split it
         split_ranges = split_range(range_to_check)
-        # Replace the current range with the split ranges
+        # Replace the current range with the split ranges within the continuous_ranges variable
         continuous_ranges[index:index + 1] = split_ranges
     return translated_continuous_ranges
 #print(f'test return value based on [50,70]: {make_all_ranges_continuous([50,70],"seed-to-soil map")}')
@@ -134,17 +134,15 @@ def find_minimum_location_number(sorted_seeds_ranges,keys):
     minimum_location_number = float('inf')
     next_ranges = sorted_seeds_ranges
     for key in keys:
-        print("evaluating key: ",key)
+        #print("evaluating key: ",key)
         sorted_ranges = sort_ranges(next_ranges)
         translated_continuous_ranges = []
         for range in sorted_ranges:
-            print('Starting new range: ',range)
             translated_continuous_ranges.extend(translate_continuous_ranges(range,key))
         print(translated_continuous_ranges)
         next_ranges = translated_continuous_ranges
     if key == "humidity-to-location map":
         location_ranges = translated_continuous_ranges
-        print("Location ranges: ",location_ranges)
         for location_range in location_ranges:
             if min(location_range) < minimum_location_number:
                 minimum_location_number = min(location_range)
