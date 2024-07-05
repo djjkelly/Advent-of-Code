@@ -56,9 +56,9 @@ result = min_heat_loss(input_list)
 print(f"\nMinimum heat loss: {result}")
 
 test_dictionary = {
-    '2023/2023_Day17_input.txt':{'attempts':(888,946),'low':946,'high':None,'answer':993},
-    '2023/2023_Day17_test1_input.txt':{'answer':94},
-    '2023/2023_Day17_test2_input.txt':{'answer':71}
+    '2023_Day17_input':{'attempts':(888,946),'low':946,'high':None,'answer':993},
+    '2023_Day17_test1_input':{'answer':94},
+    '2023_Day17_test2_input':{'answer':71}
 }
 test_function(test_dictionary,filename,result)
 '''

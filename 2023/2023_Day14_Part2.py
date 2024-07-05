@@ -47,9 +47,6 @@ list_of_previous_hashes = []
 indices = 4000000000
 for index in range(indices):
     processed_content = slide_Os(content_list)
-    print("")
-    for l in content_list:
-        print(''.join(l))
     hash = hash_list(content_list)
     if hash in list_of_previous_hashes:
         print('LOOP FOUND! index:',index,' cycles:',index/4)
