@@ -39,7 +39,6 @@ when hit side on, the beam is split into both perpendicular directions.
 LIGHT BEAM enters from left, in top-left corner.
 '''
 
-energised_tiles = set()
 directions = {
         'right': (0, 1), 'down': (1, 0), 'up': (-1, 0), 'left': (0, -1)
     }
@@ -48,15 +47,17 @@ mirror_reflections = {
         '\\': {'right': 'down', 'down': 'right', 'left': 'up', 'up': 'left'}
     }
 splitters = {
-
+    '|':,
+    '-':
 }
 
 list_of_branches_to_explore = [(0,0,'right')] # initial direction 'right' upon beam entering array
 seen_beams = set()
+energised_tiles = set()
 while list_of_branches_to_explore != []:
     current_beam = list_of_branches_to_explore.pop(0)
     if current_beam not in seen_beams:
-        seen_beams.append(current_beam)
+        seen_beams.add(current_beam)
     branch_continues = True
     while branch_continues:
         (r,c,direction) = current_beam
@@ -79,12 +80,12 @@ print('energised_tiles_no',energised_tiles_no)
 testinput should give a number of energised tiles of: 46
 Test input calculating correctly.
 
-Correct answer obtained = 8034
+Correct answer = 8034
 '''
 test_dictionary = {
-    '2023_Day16_input':
-    {'answer':8034},
-}
+    '2023_Day16_input': {'answer':8034},
+    '2023_Day16_testinput': {'answer':46}
+    }
 
 from testmodule import test_function
 test_function(test_dictionary,filename,energised_tiles_no)
