@@ -10,20 +10,27 @@ with open(full_path,'r') as file_object:
 
 import re
 
+status_active = True
 total = 0
 for line in file_content:
-    regex_list = re.findall(r'mul\((\d{1,3}),(\d{1,3})\)',line)
-    for x,y in regex_list:
-        total += int(x)*int(y)
+    regex_list = re.findall(r"mul\((\d{1,3}),(\d{1,3})\)|(?=(do\(\)|don't\(\)))",line)
+    for x,y,z in regex_list:
+        if z == '':
+            if status_active:
+                total += int(x)*int(y)
+        elif z == "do()":
+            status_active = True
+        elif z == "don't()":
+            status_active = False
 print(total)
 
 test_dictionary = {
     '2024_Day3_input':
     {'attempts':(None,),
-    'low':None,'high':None,'answer':None},
+    'low':None,'high':None,'answer':82868252},
 
     '2024_Day3_testinput':
-    {'answer':161},
+    {'answer':48},
 }
 
 from testmodule import test_function
