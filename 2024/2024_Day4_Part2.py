@@ -18,25 +18,24 @@ for i,line in enumerate(file_content):
     for j,char in enumerate(line):
         list_of_lists[i][j] = char
 
-directions = {'down_right':(1,1),'up_right':(-1,1),'down_left':(1,-1),'up_left':(-1,-1)}
 keyword = 'MAS'
 
 def is_x_mas(i,j):
     if list_of_lists[i+1][j+1] == 'M' and list_of_lists[i-1][j-1] == 'S':
         if list_of_lists[i+1][j-1] == 'M' and list_of_lists[i-1][j+1] == 'S':
-            print('Match found at ('+str(i)+','+str(j)+')!')
+            #print('Match found at ('+str(i)+','+str(j)+')!')
             return True
     if list_of_lists[i+1][j+1] == 'M' and list_of_lists[i-1][j-1] == 'S':
         if list_of_lists[i-1][j+1] == 'M' and list_of_lists[i+1][j-1] == 'S':
-            print('Match found at ('+str(i)+','+str(j)+')!')
+            #print('Match found at ('+str(i)+','+str(j)+')!')
             return True
     if list_of_lists[i-1][j-1] == 'M' and list_of_lists[i+1][j+1] == 'S':
         if list_of_lists[i+1][j-1] == 'M' and list_of_lists[i-1][j+1] == 'S':
-            print('Match found at ('+str(i)+','+str(j)+')!')
+            #print('Match found at ('+str(i)+','+str(j)+')!')
             return True
     if list_of_lists[i-1][j-1] == 'M' and list_of_lists[i+1][j+1] == 'S':
         if list_of_lists[i-1][j+1] == 'M' and list_of_lists[i+1][j-1] == 'S':
-            print('Match found at ('+str(i)+','+str(j)+')!')
+            #print('Match found at ('+str(i)+','+str(j)+')!')
             return True
 
 for i,line in enumerate(list_of_lists):
@@ -45,7 +44,7 @@ for i,line in enumerate(list_of_lists):
             if i > 0 and j > 0 and i < rows-1 and j < rows-1:
                 if is_x_mas(i,j):
                     total += 1
-                    print('Matches: '+ str(total))
+                    #print('Matches: '+ str(total))
 print(total)
 
 test_dictionary = {
